@@ -53,8 +53,10 @@ model Collaborator {
 }
 
 model User {
-  id          String   @id @default(cuid())
-  address     String   @unique
-  passkeyId   String?  // WebAuthn credential ID
-  createdAt   DateTime @default(now())
+  id                String   @id @default(cuid())
+  address           String   @unique
+  passkeyId         String?  @unique // WebAuthn credential ID
+  passkeyPublicKeyX String?  // Monad P-256 precompile X coord (0x...)
+  passkeyPublicKeyY String?  // Monad P-256 precompile Y coord (0x...)
+  createdAt         DateTime @default(now())
 }
