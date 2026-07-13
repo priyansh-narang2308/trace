@@ -55,7 +55,6 @@ export function InstantSearchModal() {
         setIsOpen((prev) => {
           const next = !prev;
           if (next) {
-            toast.info("Command-K Checkpoint Search opened");
             setTimeout(() => inputRef.current?.focus(), 50);
           }
           return next;
@@ -69,30 +68,33 @@ export function InstantSearchModal() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
-  const performSearch = useCallback(async (searchQuery: string, searchFilter: string) => {
-    if (!searchQuery.trim()) {
-      setProjects([]);
-      setCheckpoints([]);
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const res = await fetch(
-        `/api/search?q=${encodeURIComponent(searchQuery)}&filter=${searchFilter}`
-      );
-      if (res.ok) {
-        const data = await res.json();
-        setProjects(data.projects || []);
-        setCheckpoints(data.checkpoints || []);
+  const performSearch = useCallback(
+    async (searchQuery: string, searchFilter: string) => {
+      if (!searchQuery.trim()) {
+        setProjects([]);
+        setCheckpoints([]);
+        setIsLoading(false);
+        return;
       }
-    } catch (err) {
-      console.error("Search failed:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+
+      setIsLoading(true);
+      try {
+        const res = await fetch(
+          `/api/search?q=${encodeURIComponent(searchQuery)}&filter=${searchFilter}`,
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setProjects(data.projects || []);
+          setCheckpoints(data.checkpoints || []);
+        }
+      } catch (err) {
+        console.error("Search failed:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -148,7 +150,9 @@ export function InstantSearchModal() {
                 onChange={(e) => setQuery(e.target.value)}
                 className="w-full bg-transparent border-none outline-none text-pure-white font-mono text-[14px] placeholder:text-ash"
               />
-              {isLoading && <Loader2 className="h-4 w-4 animate-spin text-electric-sky shrink-0" />}
+              {isLoading && (
+                <Loader2 className="h-4 w-4 animate-spin text-electric-sky shrink-0" />
+              )}
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
@@ -187,10 +191,13 @@ export function InstantSearchModal() {
                     Raycast Instant Checkpoint Search
                   </p>
                   <p className="text-[12px] text-ash max-w-sm mx-auto leading-relaxed">
-                    Query any Monad project, cryptographic anchor (`0x...`), or collaborator wallet address instantly across the index.
+                    Query any Monad project, cryptographic anchor (`0x...`), or
+                    collaborator wallet address instantly across the index.
                   </p>
                 </div>
-              ) : projects.length === 0 && checkpoints.length === 0 && !isLoading ? (
+              ) : projects.length === 0 &&
+                checkpoints.length === 0 &&
+                !isLoading ? (
                 <div className="py-12 text-center text-ash text-[13px]">
                   No verifiable Monad records found for `{query}`.
                 </div>
@@ -205,7 +212,9 @@ export function InstantSearchModal() {
                         {projects.map((p) => (
                           <div
                             key={p.id}
-                            onClick={() => navigateTo(`/projects/${p.id}`, p.name)}
+                            onClick={() =>
+                              navigateTo(`/projects/${p.id}`, p.name)
+                            }
                             className="cursor-pointer p-3 rounded-xl bg-obsidian hover:bg-graphite border border-border hover:border-smoke transition-all flex items-center justify-between group"
                           >
                             <div className="flex items-center gap-3 overflow-hidden">
@@ -215,7 +224,8 @@ export function InstantSearchModal() {
                                   {p.name}
                                 </div>
                                 <div className="text-[12px] text-ash truncate">
-                                  {p.description || `Project Enclave ID: ${p.id}`}
+                                  {p.description ||
+                                    `Project Enclave ID: ${p.id}`}
                                 </div>
                               </div>
                             </div>
@@ -238,7 +248,7 @@ export function InstantSearchModal() {
                             onClick={() =>
                               navigateTo(
                                 `/projects/${c.projectId}/checkpoints/${encodeURIComponent(c.checkpointHash)}`,
-                                `Checkpoint ${c.checkpointHash.slice(0, 8)}...`
+                                `Checkpoint ${c.checkpointHash.slice(0, 8)}...`,
                               )
                             }
                             className="cursor-pointer p-3 rounded-xl bg-obsidian hover:bg-graphite border border-border hover:border-smoke transition-all flex items-center justify-between gap-3 group"
@@ -253,7 +263,8 @@ export function InstantSearchModal() {
                                   <span>{c.project?.name || c.projectId}</span>
                                   <span>•</span>
                                   <span className="text-electric-sky truncate">
-                                    `{c.checkpointHash.slice(0, 10)}...{c.checkpointHash.slice(-8)}`
+                                    `{c.checkpointHash.slice(0, 10)}...
+                                    {c.checkpointHash.slice(-8)}`
                                   </span>
                                 </div>
                               </div>

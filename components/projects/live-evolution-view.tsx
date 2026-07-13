@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -39,7 +40,8 @@ const DEFAULT_EVOLUTION: CheckpointNode[] = [
   {
     id: "evo-1",
     checkpointHash: "0x0000000000000000000000000000000000000001",
-    description: "Genesis Enclave Initialization: Core contract architecture deployed with Monad secp256r1 P-256 precompile signature matrix.",
+    description:
+      "Genesis Enclave Initialization: Core contract architecture deployed with Monad secp256r1 P-256 precompile signature matrix.",
     checkpointType: "DEPLOYMENT",
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
     creatorAddress: "0x71C...893B",
@@ -49,7 +51,8 @@ const DEFAULT_EVOLUTION: CheckpointNode[] = [
   {
     id: "evo-2",
     checkpointHash: "0x1928410294810294810294810294810294810294",
-    description: "Milestone Attestation #1: Integrated sub-second execution state snapshot anchor with Keccak256 proof serialization.",
+    description:
+      "Milestone Attestation #1: Integrated sub-second execution state snapshot anchor with Keccak256 proof serialization.",
     checkpointType: "MILESTONE",
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
     creatorAddress: "0x3A9...120E",
@@ -59,7 +62,8 @@ const DEFAULT_EVOLUTION: CheckpointNode[] = [
   {
     id: "evo-3",
     checkpointHash: "0x4918204918204918204918204918204918204918",
-    description: "Git Commit Anchor: Refactored multi-sig threshold verification for co-signer quorum approval.",
+    description:
+      "Git Commit Anchor: Refactored multi-sig threshold verification for co-signer quorum approval.",
     checkpointType: "GIT_COMMIT",
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(),
     creatorAddress: "0x9F2...401C",
@@ -69,7 +73,8 @@ const DEFAULT_EVOLUTION: CheckpointNode[] = [
   {
     id: "evo-4",
     checkpointHash: "0x8912841029481029481029481029481029481029",
-    description: "Milestone Verified #2: High-throughput stress test validated at 100,000 TPS across Monad testnet ring.",
+    description:
+      "Milestone Verified #2: High-throughput stress test validated at 100,000 TPS across Monad testnet ring.",
     checkpointType: "MILESTONE",
     timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
     creatorAddress: "0x71C...893B",
@@ -142,6 +147,37 @@ export function LiveEvolutionView({
     }
   };
 
+  useEffect(() => {
+    setCurrentIndex(checkpoints.length - 1);
+  }, [checkpoints.length]);
+
+  if (!checkpoints || checkpoints.length === 0) {
+    return (
+      <Card className="bg-ink border border-border shadow-key overflow-hidden">
+        <CardHeader className="pb-4 border-b border-border flex flex-row items-center justify-between">
+          <CardTitle className="text-[16px] font-medium text-pure-white flex items-center gap-2 font-sans">
+            <Layers className="h-5 w-5 text-coral-pulse" />
+            <span>Monad Enclave Evolution Replay Engine</span>
+          </CardTitle>
+          <div className="flex items-center gap-2 font-mono text-[11px]">
+            <span className="px-2.5 py-0.5 rounded uppercase font-bold bg-graphite text-coral-pulse border border-border animate-pulse">
+              Pending Genesis
+            </span>
+          </div>
+        </CardHeader>
+        <CardContent className="py-16 flex flex-col items-center justify-center text-center font-mono">
+          <Clock className="h-12 w-12 text-coral-pulse/40 mb-4 animate-pulse" />
+          <h3 className="text-[15px] font-medium text-pure-white mb-2 uppercase tracking-wider">
+            Waiting for first anchor
+          </h3>
+          <p className="text-ash text-[13px] font-sans max-w-md leading-relaxed">
+            This project has no cryptographic checkpoint anchors yet. Deploy a milestone or commit attestation onto Monad Testnet to visualize its live evolution history.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const activeCheckpoint = checkpoints[currentIndex] || checkpoints[0];
 
   return (
@@ -166,7 +202,8 @@ export function LiveEvolutionView({
           <div className="flex items-center justify-between text-[12px] text-ash">
             <span>Genesis Anchor (`Block #1048100`)</span>
             <span className="text-pure-white font-bold">
-              Timeline Progress (`{Math.round(((currentIndex + 1) / checkpoints.length) * 100)}%`)
+              Timeline Progress (`
+              {Math.round(((currentIndex + 1) / checkpoints.length) * 100)}%`)
             </span>
             <span>Current Anchor (`Block #1049281`)</span>
           </div>
@@ -174,7 +211,9 @@ export function LiveEvolutionView({
           <div className="relative h-2 w-full rounded-full bg-obsidian border border-border overflow-hidden">
             <div
               className="absolute top-0 left-0 bottom-0 bg-coral-pulse transition-all duration-300 rounded-full shadow-sm"
-              style={{ width: `${((currentIndex + 1) / checkpoints.length) * 100}%` }}
+              style={{
+                width: `${((currentIndex + 1) / checkpoints.length) * 100}%`,
+              }}
             />
           </div>
 
@@ -192,8 +231,8 @@ export function LiveEvolutionView({
                   idx === currentIndex
                     ? "bg-coral-pulse text-void-black border-coral-pulse font-bold shadow-sm scale-105"
                     : idx < currentIndex
-                    ? "bg-graphite text-emerald-verify border-border"
-                    : "bg-obsidian text-ash border-border hover:text-pure-white"
+                      ? "bg-graphite text-emerald-verify border-border"
+                      : "bg-obsidian text-ash border-border hover:text-pure-white"
                 }`}
               >
                 `#{idx + 1}: ${cp.checkpointType}`
@@ -209,12 +248,15 @@ export function LiveEvolutionView({
                 {activeCheckpoint.checkpointType}
               </span>
               <span className="text-[13px] font-bold text-pure-white truncate max-w-md">
-                Anchor Digest: `{activeCheckpoint.checkpointHash.slice(0, 14)}...`
+                Anchor Digest: `{activeCheckpoint.checkpointHash.slice(0, 14)}
+                ...`
               </span>
             </div>
             <div className="flex items-center gap-2 text-[12px] text-ash">
               <Clock className="h-3.5 w-3.5 text-electric-sky" />
-              <span>`{new Date(activeCheckpoint.timestamp).toLocaleString()}`</span>
+              <span>
+                `{new Date(activeCheckpoint.timestamp).toLocaleString()}`
+              </span>
             </div>
           </div>
 
@@ -229,7 +271,9 @@ export function LiveEvolutionView({
             </div>
             <div className="flex items-center gap-2 text-emerald-verify font-bold bg-graphite px-3 py-1 rounded-lg border border-border">
               <CheckCircle2 className="h-3.5 w-3.5" />
-              <span>Optimization: `{activeCheckpoint.gasOptimized || "-32% Gas"}`</span>
+              <span>
+                Optimization: `{activeCheckpoint.gasOptimized || "-32% Gas"}`
+              </span>
             </div>
           </div>
         </div>
@@ -261,7 +305,11 @@ export function LiveEvolutionView({
               ) : (
                 <>
                   <Play className="h-4 w-4 fill-void-black" />
-                  <span>{currentIndex >= checkpoints.length - 1 ? "Replay Evolution" : "Play Evolution"}</span>
+                  <span>
+                    {currentIndex >= checkpoints.length - 1
+                      ? "Replay Evolution"
+                      : "Play Evolution"}
+                  </span>
                 </>
               )}
             </Button>

@@ -46,6 +46,7 @@ import {
   GitFork,
   Fingerprint,
   Plus,
+  X,
 } from "lucide-react";
 
 interface Checkpoint {
@@ -529,7 +530,12 @@ export default function ProjectDetailPage({
                     }}
                     className="cursor-pointer bg-mist hover:bg-pure-white text-obsidian font-medium text-[13px] h-8 px-3.5 rounded-lg shadow-sm gap-2"
                   >
-                    <Plus className="h-3.5 w-3.5" />
+                    {showCheckpointForm ? (
+                      <X className="h-3.5 w-3.5" />
+                    ) : (
+                      <Plus className="h-3.5 w-3.5" />
+                    )}
+
                     <span>
                       {showCheckpointForm ? "Close" : "New Checkpoint"}
                     </span>

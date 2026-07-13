@@ -46,7 +46,8 @@ export function AICheckpointAssistant({
 
   const generateAIProof = async (inputText: string = prompt) => {
     if (!inputText.trim() || isLoading) {
-      if (!inputText.trim()) toast.error("Enter rough commit notes for AI analysis");
+      if (!inputText.trim())
+        toast.error("Enter rough commit notes for AI analysis");
       return;
     }
 
@@ -64,7 +65,8 @@ export function AICheckpointAssistant({
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to generate AI checkpoint suggestion");
+      if (!res.ok)
+        throw new Error("Failed to generate AI checkpoint suggestion");
 
       const data = await res.json();
       setSuggestion(data.suggestion);
@@ -165,7 +167,9 @@ export function AICheckpointAssistant({
             <div className="flex items-center justify-between pb-2 border-b border-border/60">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-emerald-verify" />
-                <span className="font-bold text-pure-white">{suggestion.title}</span>
+                <span className="font-bold text-pure-white">
+                  {suggestion.title}
+                </span>
               </div>
               <span className="px-2 py-0.5 rounded bg-graphite text-emerald-verify text-[11px] font-bold">
                 Confidence: `{suggestion.confidenceScore}%`
@@ -179,7 +183,9 @@ export function AICheckpointAssistant({
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
               <div className="text-[11px] text-ash flex items-center gap-1.5">
                 <Terminal className="h-3.5 w-3.5 text-electric-sky" />
-                <span>Format: `{suggestion.checkpointType}` Anchor Protocol</span>
+                <span>
+                  Format: `{suggestion.checkpointType}` Anchor Protocol
+                </span>
               </div>
 
               <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
