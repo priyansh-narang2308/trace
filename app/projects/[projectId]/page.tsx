@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, useCallback, use } from "react";
@@ -47,6 +48,10 @@ import {
   Fingerprint,
   Plus,
   X,
+  LayoutDashboard,
+  Layers,
+  GitCompare,
+  Terminal,
 } from "lucide-react";
 
 interface Checkpoint {
@@ -91,6 +96,9 @@ export default function ProjectDetailPage({
   const [showPasskeyPanel, setShowPasskeyPanel] = useState(false);
   const [showCheckpointForm, setShowCheckpointForm] = useState(false);
   const { txResult, submitCheckpoint, resetTx } = useMonadCheckpointTx();
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "evolution" | "anchor" | "timeline" | "team" | "comparison"
+  >("overview");
 
   const [editForm, setEditForm] = useState({
     name: "",
@@ -457,71 +465,174 @@ export default function ProjectDetailPage({
           </Card>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="bg-ink border border-border shadow-key">
-            <CardContent className="p-6 flex items-center justify-between">
-              <div>
-                <div className="text-[12px] font-mono text-ash uppercase">
-                  Total Checkpoints
+        {/* Floating Side Dock Navigation System */}
+        <div className="fixed right-5 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3 p-2.5 rounded-2xl bg-ink/90 border border-border shadow-2xl backdrop-blur-xl transition-all hover:border-coral-pulse/40">
+          {[
+            {
+              id: "overview",
+              label: "Overview Dashboard",
+              icon: LayoutDashboard,
+            },
+            { id: "evolution", label: "Evolution Replay", icon: Layers },
+            { id: "anchor", label: "Anchor Checkpoint", icon: Terminal },
+            { id: "timeline", label: "Timeline Ledger", icon: Clock },
+            { id: "team", label: "Teammates Access", icon: Users },
+            { id: "comparison", label: "Enclave Comparison", icon: GitCompare },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <div key={tab.id} className="relative group flex items-center">
+                <div className="absolute right-14 bg-ink border border-border text-pure-white text-[11px] font-mono font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-lg shadow-2xl whitespace-nowrap opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 pointer-events-none origin-right border-l-2 border-l-coral-pulse">
+                  {tab.label}
                 </div>
-                <div className="text-[32px] font-medium text-pure-white mt-1">
-                  {project.checkpoints.length}
-                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab(tab.id as any);
+                    toast.info(`Swapped to ${tab.label}`);
+                  }}
+                  className={`cursor-pointer h-10 w-10 rounded-xl flex items-center justify-center transition-all ${
+                    isActive
+                      ? "bg-coral-pulse text-void-black font-bold shadow-[0_0_15px_rgba(255,42,42,0.4)] scale-110"
+                      : "bg-obsidian text-ash hover:text-pure-white hover:bg-graphite"
+                  }`}
+                  aria-label={tab.label}
+                >
+                  <Icon className="h-4.5 w-4.5" />
+                </button>
               </div>
-              <Clock className="h-8 w-8 text-coral-pulse opacity-80" />
-            </CardContent>
-          </Card>
-
-          <Card className="bg-ink border border-border shadow-key">
-            <CardContent className="p-6 flex items-center justify-between">
-              <div>
-                <div className="text-[12px] font-mono text-ash uppercase">
-                  Team Collaborators
-                </div>
-                <div className="text-[32px] font-medium text-pure-white mt-1">
-                  {project.collaborators.length}
-                </div>
-              </div>
-              <Users className="h-8 w-8 text-electric-sky opacity-80" />
-            </CardContent>
-          </Card>
-
-          <Card className="bg-ink border border-border shadow-key">
-            <CardContent className="p-6 flex items-center justify-between">
-              <div>
-                <div className="text-[12px] font-mono text-ash uppercase">
-                  Finality Tier
-                </div>
-                <div className="text-[32px] font-medium text-emerald-verify mt-1">
-                  1-Sec
-                </div>
-              </div>
-              <CheckCircle2 className="h-8 w-8 text-emerald-verify opacity-80" />
-            </CardContent>
-          </Card>
+            );
+          })}
         </div>
 
-        <LiveCollaborationIndicators
-          projectId={project.projectId}
-          collaborators={project.collaborators.map((c) => c.address)}
-          ownerAddress={project.ownerAddress}
-        />
+        {/* Tabbed Content Areas */}
+        <div className="min-h-[450px] transition-all duration-300">
+          {activeTab === "overview" && (
+            <div className="space-y-8 animate-fade-in">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card className="bg-ink border border-border shadow-key">
+                  <CardContent className="p-6 flex items-center justify-between">
+                    <div>
+                      <div className="text-[12px] font-mono text-ash uppercase">
+                        Total Checkpoints
+                      </div>
+                      <div className="text-[32px] font-medium text-pure-white mt-1">
+                        {project.checkpoints.length}
+                      </div>
+                    </div>
+                    <Clock className="h-8 w-8 text-coral-pulse opacity-80" />
+                  </CardContent>
+                </Card>
 
-        <LiveEvolutionView
-          projectId={project.projectId}
-          checkpoints={project.checkpoints}
-        />
+                <Card className="bg-ink border border-border shadow-key">
+                  <CardContent className="p-6 flex items-center justify-between">
+                    <div>
+                      <div className="text-[12px] font-mono text-ash uppercase">
+                        Team Collaborators
+                      </div>
+                      <div className="text-[32px] font-medium text-pure-white mt-1">
+                        {project.collaborators.length}
+                      </div>
+                    </div>
+                    <Users className="h-8 w-8 text-electric-sky opacity-80" />
+                  </CardContent>
+                </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          <div className="lg:col-span-2 space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-[20px] font-medium tracking-tight text-pure-white">
-                Cryptographic Checkpoint Ledger
-              </h3>
-              <div className="flex items-center gap-3">
-                <span className="text-[12px] font-mono text-ash">
-                  Monad Testnet Anchors
-                </span>
+                <Card className="bg-ink border border-border shadow-key">
+                  <CardContent className="p-6 flex items-center justify-between">
+                    <div>
+                      <div className="text-[12px] font-mono text-ash uppercase">
+                        Finality Tier
+                      </div>
+                      <div className="text-[32px] font-medium text-emerald-verify mt-1">
+                        1-Sec
+                      </div>
+                    </div>
+                    <CheckCircle2 className="h-8 w-8 text-emerald-verify opacity-80" />
+                  </CardContent>
+                </Card>
+              </div>
+
+              <LiveCollaborationIndicators
+                projectId={project.projectId}
+                collaborators={project.collaborators.map((c) => c.address)}
+                ownerAddress={project.ownerAddress}
+              />
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                <div className="lg:col-span-2 space-y-6">
+                  <Card className="bg-ink border border-border shadow-key">
+                    <CardHeader className="pb-3 border-b border-border">
+                      <CardTitle className="text-[15px] font-medium text-pure-white font-sans">
+                        Project Meta Objectives
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-5 text-[14px] text-ash leading-relaxed font-sans">
+                      {project.description}
+                    </CardContent>
+                  </Card>
+                </div>
+                <div className="space-y-6">
+                  <ErrorBoundary fallbackMessage="Failed to load export panel">
+                    <ExportPanel
+                      projectData={{
+                        projectId: project.projectId,
+                        projectName: project.name,
+                        checkpoints: project.checkpoints.map((cp) => ({
+                          checkpointHash: cp.checkpointHash || "",
+                          description: cp.description || "",
+                          checkpointType: cp.checkpointType || "MILESTONE",
+                          creatorAddress: cp.creatorAddress || "",
+                          timestamp: cp.timestamp || new Date().toISOString(),
+                          txHash: cp.txHash || null,
+                        })),
+                        collaborators: project.collaborators.map((c) => ({
+                          address: c.address || "",
+                          addedAt: new Date().toISOString(),
+                        })),
+                      }}
+                    />
+                  </ErrorBoundary>
+                  <Card className="bg-ink border border-border shadow-key">
+                    <CardHeader className="pb-3 border-b border-border">
+                      <CardTitle className="text-[14px] font-medium flex items-center gap-2 text-pure-white">
+                        <AlertTriangle className="h-4 w-4 text-coral-pulse" />
+                        <span>Monad Security Protocol</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-4 text-[13px] text-ash leading-[1.6] space-y-2 font-mono">
+                      <p>
+                        Only owner (`{project.ownerAddress.slice(0, 6)}...`) or
+                        authorized co-signers can anchor checkpoints to this
+                        ledger.
+                      </p>
+                      <p>
+                        Verified on Monad Testnet (`Chain ID 10143`) with
+                        sub-second finality.
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "evolution" && (
+            <div className="space-y-6 animate-fade-in">
+              <LiveEvolutionView
+                projectId={project.projectId}
+                checkpoints={project.checkpoints}
+              />
+            </div>
+          )}
+
+          {activeTab === "anchor" && (
+            <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <h3 className="text-[20px] font-medium tracking-tight text-pure-white">
+                  Monad Enclave AI & Checkpoint Console
+                </h3>
                 {isOwner && (
                   <Button
                     onClick={() => {
@@ -535,113 +646,90 @@ export default function ProjectDetailPage({
                     ) : (
                       <Plus className="h-3.5 w-3.5" />
                     )}
-
                     <span>
-                      {showCheckpointForm ? "Close" : "New Checkpoint"}
+                      {showCheckpointForm ? "Close Form" : "New Checkpoint"}
                     </span>
                   </Button>
                 )}
               </div>
-            </div>
 
-            {showCheckpointForm && (
-              <div className="space-y-4 animate-fade-in">
-                <CheckpointCreationForm
-                  projectId={project.projectId}
-                  collaborators={project.collaborators}
-                  onSuccess={async (checkpoint) => {
-                    const cp = checkpoint as Record<string, string>;
-                    if (cp.checkpointHash) {
-                      await submitCheckpoint(
-                        project.projectId,
-                        cp.description || "",
-                        cp.checkpointHash,
-                      );
-                    }
-                    fetchProjectDetail();
-                    setShowCheckpointForm(false);
-                  }}
-                  onCancel={() => setShowCheckpointForm(false)}
-                />
+              {showCheckpointForm && (
+                <div className="space-y-4 animate-fade-in">
+                  <CheckpointCreationForm
+                    projectId={project.projectId}
+                    collaborators={project.collaborators}
+                    onSuccess={async (checkpoint) => {
+                      const cp = checkpoint as Record<string, string>;
+                      if (cp.checkpointHash) {
+                        await submitCheckpoint(
+                          project.projectId,
+                          cp.description || "",
+                          cp.checkpointHash,
+                        );
+                      }
+                      fetchProjectDetail();
+                      setShowCheckpointForm(false);
+                    }}
+                    onCancel={() => setShowCheckpointForm(false)}
+                  />
+                  <TxConfirmation txResult={txResult} />
+                </div>
+              )}
+
+              {txResult.status !== "IDLE" && !showCheckpointForm && (
                 <TxConfirmation txResult={txResult} />
+              )}
+
+              {isOwner && !showCheckpointForm && (
+                <div className="space-y-6">
+                  <AICheckpointAssistant
+                    projectId={project.projectId}
+                    onApplySuggestion={(s) => {
+                      setShowCheckpointForm(true);
+                    }}
+                  />
+                  <MicroCheckpointBar
+                    projectId={project.projectId}
+                    onSuccess={() => fetchProjectDetail()}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === "timeline" && (
+            <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <h3 className="text-[20px] font-medium tracking-tight text-pure-white">
+                  Cryptographic Checkpoint Ledger
+                </h3>
+                <span className="text-[12px] font-mono text-ash bg-graphite border border-border px-3 py-1 rounded-full">
+                  Monad Testnet Stream
+                </span>
               </div>
-            )}
+              <RealtimeTimeline projectId={project.projectId} />
+            </div>
+          )}
 
-            {txResult.status !== "IDLE" && !showCheckpointForm && (
-              <TxConfirmation txResult={txResult} />
-            )}
-
-            {isOwner && !showCheckpointForm && (
-              <div className="space-y-4">
-                <AICheckpointAssistant
+          {activeTab === "team" && (
+            <div className="max-w-xl mx-auto space-y-6 animate-fade-in">
+              <ErrorBoundary fallbackMessage="Failed to load collaborator manager">
+                <CollaboratorManager
                   projectId={project.projectId}
-                  onApplySuggestion={(s) => {
-                    setShowCheckpointForm(true);
-                  }}
+                  onCollaboratorChange={fetchProjectDetail}
                 />
-                <MicroCheckpointBar
-                  projectId={project.projectId}
-                  onSuccess={() => fetchProjectDetail()}
-                />
-              </div>
-            )}
+              </ErrorBoundary>
+            </div>
+          )}
 
-            <RealtimeTimeline projectId={project.projectId} />
-          </div>
-
-          <div className="space-y-6">
-            <ErrorBoundary fallbackMessage="Failed to load collaborator manager">
-              <CollaboratorManager
-                projectId={project.projectId}
-                onCollaboratorChange={fetchProjectDetail}
-              />
-            </ErrorBoundary>
-
-            <ErrorBoundary fallbackMessage="Failed to load export panel">
-              <ExportPanel
-                projectData={{
-                  projectId: project.projectId,
-                  projectName: project.name,
-                  checkpoints: project.checkpoints.map((cp) => ({
-                    checkpointHash: cp.checkpointHash || "",
-                    description: cp.description || "",
-                    checkpointType: cp.checkpointType || "MILESTONE",
-                    creatorAddress: cp.creatorAddress || "",
-                    timestamp: cp.timestamp || new Date().toISOString(),
-                    txHash: cp.txHash || null,
-                  })),
-                  collaborators: project.collaborators.map((c) => ({
-                    address: c.address || "",
-                    addedAt: new Date().toISOString(),
-                  })),
-                }}
-              />
-            </ErrorBoundary>
-
-            <Card className="bg-ink border border-border shadow-key">
-              <CardHeader className="pb-3 border-b border-border">
-                <CardTitle className="text-[14px] font-medium flex items-center gap-2 text-pure-white">
-                  <AlertTriangle className="h-4 w-4 text-coral-pulse" />
-                  <span>Monad Security Protocol</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-4 text-[13px] text-ash leading-[1.6] space-y-2 font-mono">
-                <p>
-                  Only owner (`{project.ownerAddress.slice(0, 6)}...`) or
-                  authorized co-signers can anchor checkpoints to this ledger.
-                </p>
-                <p>
-                  Verified on Monad Testnet (`Chain ID 10143`) with sub-second
-                  finality.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+          {activeTab === "comparison" && (
+            <div className="space-y-6 animate-fade-in">
+              <ErrorBoundary fallbackMessage="Failed to load project comparison">
+                <ProjectComparison currentProjectId={project.projectId} />
+              </ErrorBoundary>
+            </div>
+          )}
         </div>
-
-        <ErrorBoundary fallbackMessage="Failed to load project comparison">
-          <ProjectComparison currentProjectId={project.projectId} />
-        </ErrorBoundary>
       </main>
     </div>
   );

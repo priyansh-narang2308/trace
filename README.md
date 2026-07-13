@@ -1,11 +1,5 @@
 # TRACE - Monad Testnet Enclave & Cryptographic Checkpoint Ledger
 
-<div align="center">
-  <h3>Autonomous Proof-of-Contribution Ledger with Sub-Second Finality on Monad Testnet (Chain ID 10143)</h3>
-</div>
-
----
-
 ## Executive Overview
 
 TRACE is a high-performance, ultra-low-latency cryptographic checkpoint ledger designed for multi-signer autonomous project enclaves. By leveraging Monad Testnet's sub-second finality execution ring and native `secp256r1` (`0x0100`) precompile optimization, TRACE allows developers, auditors, and autonomous AI agents to anchor milestone states, smart contract deployments, and git commit digests directly on-chain with 99.4% gas efficiency.
