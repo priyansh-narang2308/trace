@@ -21,7 +21,10 @@ export interface ProjectFormData {
   isPublic: boolean;
 }
 
-export function CreateProjectForm({ onSubmit, onCancel }: CreateProjectFormProps) {
+export function CreateProjectForm({
+  onSubmit,
+  onCancel,
+}: CreateProjectFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<ProjectFormData>({
     projectId: "",
@@ -48,7 +51,7 @@ export function CreateProjectForm({ onSubmit, onCancel }: CreateProjectFormProps
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -67,7 +70,10 @@ export function CreateProjectForm({ onSubmit, onCancel }: CreateProjectFormProps
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-[13px] font-medium text-[#ffffff]">
+            <Label
+              htmlFor="name"
+              className="text-[13px] font-medium text-[#ffffff]"
+            >
               Project Name
             </Label>
             <Input
@@ -83,7 +89,10 @@ export function CreateProjectForm({ onSubmit, onCancel }: CreateProjectFormProps
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="projectId" className="text-[13px] font-medium text-[#ffffff]">
+            <Label
+              htmlFor="projectId"
+              className="text-[13px] font-medium text-[#ffffff]"
+            >
               Onchain Project Identifier (Optional)
             </Label>
             <Input
@@ -98,7 +107,10 @@ export function CreateProjectForm({ onSubmit, onCancel }: CreateProjectFormProps
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-[13px] font-medium text-[#ffffff]">
+            <Label
+              htmlFor="description"
+              className="text-[13px] font-medium text-[#ffffff]"
+            >
               Description & Hackathon Objectives
             </Label>
             <Textarea
@@ -122,7 +134,10 @@ export function CreateProjectForm({ onSubmit, onCancel }: CreateProjectFormProps
                 <Lock className="h-5 w-5 text-[#ff6363]" />
               )}
               <div className="space-y-0.5">
-                <Label htmlFor="isPublic" className="text-[13px] font-medium text-[#ffffff] cursor-pointer">
+                <Label
+                  htmlFor="isPublic"
+                  className="text-[13px] font-medium text-[#ffffff] cursor-pointer"
+                >
                   {formData.isPublic ? "Public Repository" : "Private Project"}
                 </Label>
               </div>

@@ -187,24 +187,18 @@ npm run build
 
 ---
 
-## Deployment Configuration (Tasks 58 & 59)
+## Production Deployment (Vercel Unified Platform)
 
-### Deploy Frontend on Vercel (vercel.json)
+TRACE is pre-configured for instant, unified 1-click deployment on the Vercel Platform (Frontend UI, API Route Handlers, and Database persistence):
 
-TRACE includes a pre-configured `vercel.json` manifest for 1-click deployment on the Vercel Platform:
-
-1. Connect your GitHub repository to your Vercel account.
-2. Vercel automatically detects `vercel.json` and runs `npx prisma generate && next build`.
-3. Set environment variables (`DATABASE_URL`, `NEXT_PUBLIC_RPC_URL="https://rpc.monad.xyz"`).
-4. Click Deploy to launch your production instance.
-
-### Deploy Database on Railway (railway.json)
-
-To provision a production PostgreSQL instance on Railway:
-
-1. Create a new PostgreSQL database on Railway.app.
-2. Connect this repository using the included `railway.json` build manifest.
-3. Railway automatically runs `npx prisma migrate deploy` on container startup to sync the schema.
+1. **Connect GitHub Repository**: Link your repository to your Vercel account.
+2. **Automated Build Setup**: Vercel automatically detects `vercel.json` and runs `npx prisma generate && next build` using Turbopack.
+3. **Configure Environment Variables**:
+   - `DATABASE_URL`: Set your Vercel Postgres, Neon, or cloud relational connection string (`postgresql://...`).
+   - `NEXT_PUBLIC_CHAIN_ID`: `10143` (Monad Testnet).
+   - `NEXT_PUBLIC_RPC_URL`: `https://rpc.monad.xyz`
+4. **Automated Schema Migrations**: Run `npx prisma db push` or add a post-build hook to sync your production schema.
+5. **Launch Enclave**: Click Deploy to instantly activate your sub-second Monad Testnet enclave globally.
 
 ---
 

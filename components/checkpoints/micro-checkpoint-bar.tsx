@@ -98,7 +98,9 @@ export function MicroCheckpointBar({
         setMessage(
           `Micro-anchor anchored to ${checkpointHash.slice(0, 10)}...`,
         );
-        toast.success(`Sub-second micro-checkpoint anchored (${checkpointHash.slice(0, 8)}...)!`);
+        toast.success(
+          `Sub-second micro-checkpoint anchored (${checkpointHash.slice(0, 8)}...)!`,
+        );
         setTimeout(() => setStatus("IDLE"), 3000);
         onSuccess?.(data.checkpoint);
       } catch (err: unknown) {
