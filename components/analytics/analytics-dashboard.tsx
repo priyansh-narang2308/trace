@@ -130,7 +130,10 @@ export function AnalyticsDashboard() {
     },
   ];
 
-  const maxTypeCount = Math.max(...data.checkpointsByType.map((t) => t.count), 1);
+  const maxTypeCount = Math.max(
+    ...data.checkpointsByType.map((t) => t.count),
+    1,
+  );
   const maxWeekly = Math.max(...data.weeklyTrend, 1);
 
   return (
@@ -167,7 +170,10 @@ export function AnalyticsDashboard() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((stat) => (
-          <Card key={stat.label} className="bg-ink border border-border shadow-key">
+          <Card
+            key={stat.label}
+            className="bg-ink border border-border shadow-key"
+          >
             <CardContent className="p-5 flex items-center justify-between">
               <div className="space-y-1">
                 <div className="text-[11px] font-mono text-ash uppercase tracking-wider">
@@ -201,12 +207,17 @@ export function AnalyticsDashboard() {
                 const height = (val / maxWeekly) * 100;
                 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
                 return (
-                  <div key={idx} className="flex flex-col items-center gap-1.5 flex-1">
+                  <div
+                    key={idx}
+                    className="flex flex-col items-center gap-1.5 flex-1"
+                  >
                     <span className="text-[10px] text-ash">{val}</span>
                     <div
                       className="w-full rounded-t-md bg-coral-pulse/80 hover:bg-coral-pulse transition-colors cursor-pointer"
                       style={{ height: `${height}%`, minHeight: "4px" }}
-                      onClick={() => toast.info(`${days[idx]}: ${val} checkpoints anchored`)}
+                      onClick={() =>
+                        toast.info(`${days[idx]}: ${val} checkpoints anchored`)
+                      }
                     />
                     <span className="text-[10px] text-ash">{days[idx]}</span>
                   </div>
@@ -228,7 +239,9 @@ export function AnalyticsDashboard() {
               <div key={item.type} className="space-y-1.5">
                 <div className="flex items-center justify-between text-[12px]">
                   <span className="text-mist font-medium">{item.type}</span>
-                  <span className="text-pure-white font-bold">{item.count}</span>
+                  <span className="text-pure-white font-bold">
+                    {item.count}
+                  </span>
                 </div>
                 <div className="h-2 w-full rounded-full bg-graphite overflow-hidden">
                   <div
@@ -258,10 +271,18 @@ export function AnalyticsDashboard() {
               >
                 <div className="flex items-center gap-3 overflow-hidden">
                   <div className="h-8 w-8 rounded-lg bg-graphite border border-border flex items-center justify-center shrink-0">
-                    {act.type === "DEPLOYMENT" && <Zap className="h-4 w-4 text-emerald-verify" />}
-                    {act.type === "MILESTONE" && <Sparkles className="h-4 w-4 text-coral-pulse" />}
-                    {act.type === "GIT_COMMIT" && <GitCommit className="h-4 w-4 text-electric-sky" />}
-                    {act.type === "REVIEW" && <ShieldCheck className="h-4 w-4 text-purple-400" />}
+                    {act.type === "DEPLOYMENT" && (
+                      <Zap className="h-4 w-4 text-emerald-verify" />
+                    )}
+                    {act.type === "MILESTONE" && (
+                      <Sparkles className="h-4 w-4 text-coral-pulse" />
+                    )}
+                    {act.type === "GIT_COMMIT" && (
+                      <GitCommit className="h-4 w-4 text-electric-sky" />
+                    )}
+                    {act.type === "REVIEW" && (
+                      <ShieldCheck className="h-4 w-4 text-purple-400" />
+                    )}
                   </div>
                   <div className="overflow-hidden">
                     <div className="text-[13px] text-pure-white truncate font-sans font-medium">
@@ -270,7 +291,9 @@ export function AnalyticsDashboard() {
                     <div className="text-[11px] text-ash flex items-center gap-2">
                       <span>{act.projectName}</span>
                       <span>·</span>
-                      <span>{new Date(act.timestamp).toLocaleTimeString()}</span>
+                      <span>
+                        {new Date(act.timestamp).toLocaleTimeString()}
+                      </span>
                     </div>
                   </div>
                 </div>
