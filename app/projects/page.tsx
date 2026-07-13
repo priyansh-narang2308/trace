@@ -25,6 +25,7 @@ import {
   ChevronRight,
   ShieldCheck,
 } from "lucide-react";
+import SideRays from "@/components/SideRays";
 
 interface ProjectClient {
   projectId: string;
@@ -103,8 +104,18 @@ export default function ProjectsPage() {
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#040506] text-[#ffffff] p-6 font-sans">
-        <Card className="w-full max-w-md bg-[#07080a] border border-[#363739] shadow-key">
+      <div className="min-h-screen flex items-center justify-center bg-[#040506] text-[#ffffff] p-6 font-sans relative overflow-hidden">
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden w-full h-screen">
+          <SideRays
+            className="w-full h-full"
+            rayColor1="#FF2A2A"
+            rayColor2="#FF6363"
+            speed={2.2}
+            intensity={1.8}
+            origin="top-right"
+          />
+        </div>
+        <Card className="w-full max-w-md bg-[#07080a] border border-[#363739] shadow-key relative z-10">
           <CardHeader className="pb-3 text-center border-b border-[#363739]">
             <CardTitle className="text-[22px] font-medium text-[#ffffff]">
               Connect to TRACE
@@ -124,7 +135,17 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#040506] text-[#ffffff] font-sans selection:bg-[#ff6363]/30 selection:text-white pb-20">
+    <div className="min-h-screen bg-[#040506] text-[#ffffff] font-sans selection:bg-[#ff6363]/30 selection:text-white pb-20 relative overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden w-full h-screen">
+        <SideRays
+          className="w-full h-full"
+          rayColor1="#FF2A2A"
+          rayColor2="#FF6363"
+          speed={2.2}
+          intensity={1.8}
+          origin="top-right"
+        />
+      </div>
       <header className="sticky top-0 z-50 border-b border-[#363739] bg-[#040506]/80 backdrop-blur-xl">
         <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
@@ -143,7 +164,7 @@ export default function ProjectsPage() {
         </div>
       </header>
 
-      <main className="max-w-[1200px] mx-auto px-6 py-10">
+      <main className="max-w-[1200px] mx-auto px-6 py-10 relative z-10">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
           <div>
             <h1 className="text-[32px] sm:text-[36px] font-normal tracking-[0.2px] text-[#ffffff] leading-[1.15]">

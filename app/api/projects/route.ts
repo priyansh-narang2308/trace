@@ -60,8 +60,12 @@ export async function GET(request: NextRequest) {
       const projects = await prisma.project.findMany({
         where: { ownerAddress: ownerAddress.toLowerCase() },
         include: {
-          checkpoints: true,
-          collaborators: true,
+          _count: {
+            select: {
+              checkpoints: true,
+              collaborators: true,
+            },
+          },
         },
         orderBy: { createdAt: "desc" },
       });
@@ -72,8 +76,12 @@ export async function GET(request: NextRequest) {
     const projects = await prisma.project.findMany({
       where: { isPublic: true },
       include: {
-        checkpoints: true,
-        collaborators: true,
+        _count: {
+          select: {
+            checkpoints: true,
+            collaborators: true,
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
