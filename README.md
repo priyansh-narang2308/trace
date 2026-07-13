@@ -2,9 +2,6 @@
 
 <div align="center">
   <h3>Autonomous Proof-of-Contribution Ledger with Sub-Second Finality on Monad Testnet (Chain ID 10143)</h3>
-  <p>
-    <b>Built with Next.js 16 (Turbopack) · Tailwind CSS v4 · Monad secp256r1 Precompile (0x0100) · WebAuthn Passkeys · TRACE Enclave AI</b>
-  </p>
 </div>
 
 ---
