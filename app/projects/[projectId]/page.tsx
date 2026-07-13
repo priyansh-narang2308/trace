@@ -9,6 +9,9 @@ import { WalletConnect } from "@/components/wallet-connect";
 import { CollaboratorManager } from "@/components/projects/collaborator-manager";
 import { CloneProjectModal } from "@/components/projects/clone-project-modal";
 import { PasskeyAuth } from "@/components/passkey-auth";
+import { CheckpointCreationForm } from "@/components/checkpoints/checkpoint-creation-form";
+import { TxConfirmation } from "@/components/checkpoints/tx-confirmation";
+import { useMonadCheckpointTx } from "@/hooks/use-monad-checkpoint-tx";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,6 +33,7 @@ import {
   AlertTriangle,
   GitFork,
   Fingerprint,
+  Plus,
 } from "lucide-react";
 
 interface Checkpoint {
@@ -72,6 +76,8 @@ export default function ProjectDetailPage({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCloneModal, setShowCloneModal] = useState(false);
   const [showPasskeyPanel, setShowPasskeyPanel] = useState(false);
+  const [showCheckpointForm, setShowCheckpointForm] = useState(false);
+  const { txResult, submitCheckpoint, resetTx } = useMonadCheckpointTx();
 
   const [editForm, setEditForm] = useState({
     name: "",
@@ -481,10 +487,53 @@ export default function ProjectDetailPage({
               <h3 className="text-[20px] font-medium tracking-tight text-[#ffffff]">
                 Cryptographic Checkpoint Ledger
               </h3>
-              <span className="text-[12px] font-mono text-[#9c9c9d]">
-                Monad Testnet Anchors
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="text-[12px] font-mono text-[#9c9c9d]">
+                  Monad Testnet Anchors
+                </span>
+                {isOwner && (
+                  <Button
+                    onClick={() => {
+                      setShowCheckpointForm(!showCheckpointForm);
+                      if (!showCheckpointForm) resetTx();
+                    }}
+                    className="cursor-pointer bg-[#e6e6e6] hover:bg-[#ffffff] text-[#111214] font-medium text-[13px] h-8 px-3.5 rounded-lg shadow-sm gap-2"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    <span>
+                      {showCheckpointForm ? "Close" : "New Checkpoint"}
+                    </span>
+                  </Button>
+                )}
+              </div>
             </div>
+
+            {showCheckpointForm && (
+              <div className="space-y-4 animate-fade-in">
+                <CheckpointCreationForm
+                  projectId={project.projectId}
+                  collaborators={project.collaborators}
+                  onSuccess={async (checkpoint) => {
+                    const cp = checkpoint as Record<string, string>;
+                    if (cp.checkpointHash) {
+                      await submitCheckpoint(
+                        project.projectId,
+                        cp.description || "",
+                        cp.checkpointHash,
+                      );
+                    }
+                    fetchProjectDetail();
+                    setShowCheckpointForm(false);
+                  }}
+                  onCancel={() => setShowCheckpointForm(false)}
+                />
+                <TxConfirmation txResult={txResult} />
+              </div>
+            )}
+
+            {txResult.status !== "IDLE" && !showCheckpointForm && (
+              <TxConfirmation txResult={txResult} />
+            )}
 
             {project.checkpoints.length === 0 ? (
               <Card className="bg-[#07080a] border border-dashed border-[#363739]">
