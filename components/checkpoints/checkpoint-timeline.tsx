@@ -1,71 +1,79 @@
-'use client'
+"use client";
 
-import { CheckpointFormData } from './create-checkpoint-form'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { 
-  GitBranch, 
-  Rocket, 
-  Camera, 
-  Users, 
+import { CheckpointFormData } from "./create-checkpoint-form";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  GitBranch,
+  Rocket,
+  Camera,
+  Users,
   FileText,
   ExternalLink,
   Clock,
-  Hash
-} from 'lucide-react'
-import { formatDistanceToNow } from 'date-fns'
+  Hash,
+} from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
 interface Checkpoint {
-  id: string
-  projectId: string
-  checkpointHash: string
-  description: string
-  checkpointType: 'MANUAL' | 'GIT_COMMIT' | 'DEPLOYMENT' | 'SCREENSHOT' | 'COLLABORATION'
-  creatorAddress: string
-  screenshotUrl: string | null
-  collaborators: string[]
-  timestamp: string
-  createdAt: string
+  id: string;
+  projectId: string;
+  checkpointHash: string;
+  description: string;
+  checkpointType:
+    | "MANUAL"
+    | "GIT_COMMIT"
+    | "DEPLOYMENT"
+    | "SCREENSHOT"
+    | "COLLABORATION";
+  creatorAddress: string;
+  screenshotUrl: string | null;
+  collaborators: string[];
+  timestamp: string;
+  createdAt: string;
 }
 
 interface CheckpointTimelineProps {
-  checkpoints: Checkpoint[]
-  onCheckpointClick?: (checkpoint: Checkpoint) => void
+  checkpoints: Checkpoint[];
+  onCheckpointClick?: (checkpoint: Checkpoint) => void;
 }
 
 const checkpointTypeConfig = {
   MANUAL: {
     icon: FileText,
-    label: 'Manual',
-    color: 'bg-blue-500',
+    label: "Manual",
+    color: "bg-blue-500",
   },
   GIT_COMMIT: {
     icon: GitBranch,
-    label: 'Git Commit',
-    color: 'bg-green-500',
+    label: "Git Commit",
+    color: "bg-green-500",
   },
   DEPLOYMENT: {
     icon: Rocket,
-    label: 'Deployment',
-    color: 'bg-purple-500',
+    label: "Deployment",
+    color: "bg-purple-500",
   },
   SCREENSHOT: {
     icon: Camera,
-    label: 'Screenshot',
-    color: 'bg-orange-500',
+    label: "Screenshot",
+    color: "bg-orange-500",
   },
   COLLABORATION: {
     icon: Users,
-    label: 'Collaboration',
-    color: 'bg-pink-500',
+    label: "Collaboration",
+    color: "bg-pink-500",
   },
-}
+};
 
-export function CheckpointTimeline({ checkpoints, onCheckpointClick }: CheckpointTimelineProps) {
+export function CheckpointTimeline({
+  checkpoints,
+  onCheckpointClick,
+}: CheckpointTimelineProps) {
   const formatAddress = (addr: string) => {
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`
-  }
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  };
 
   if (checkpoints.length === 0) {
     return (
@@ -74,18 +82,19 @@ export function CheckpointTimeline({ checkpoints, onCheckpointClick }: Checkpoin
           <FileText className="h-16 w-16 text-muted-foreground mb-4" />
           <h3 className="text-xl font-semibold mb-2">No checkpoints yet</h3>
           <p className="text-muted-foreground text-center">
-            Create your first checkpoint to start tracking your project's progress
+            Create your first checkpoint to start tracking your project&apos;s
+            progress
           </p>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
     <div className="space-y-6">
       {checkpoints.map((checkpoint, index) => {
-        const config = checkpointTypeConfig[checkpoint.checkpointType]
-        const Icon = config.icon
+        const config = checkpointTypeConfig[checkpoint.checkpointType];
+        const Icon = config.icon;
 
         return (
           <div key={checkpoint.id} className="relative">
@@ -94,14 +103,16 @@ export function CheckpointTimeline({ checkpoints, onCheckpointClick }: Checkpoin
               <div className="absolute left-6 top-12 bottom-0 w-0.5 bg-border" />
             )}
 
-            <Card 
+            <Card
               className="ml-12 hover:shadow-md transition-shadow cursor-pointer"
               onClick={() => onCheckpointClick?.(checkpoint)}
             >
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
                   {/* Icon */}
-                  <div className={`absolute -left-12 mt-1 p-2 rounded-full ${config.color} text-white`}>
+                  <div
+                    className={`absolute -left-12 mt-1 p-2 rounded-full ${config.color} text-white`}
+                  >
                     <Icon className="h-4 w-4" />
                   </div>
 
@@ -115,10 +126,15 @@ export function CheckpointTimeline({ checkpoints, onCheckpointClick }: Checkpoin
                           </Badge>
                           <span className="text-sm text-muted-foreground flex items-center gap-1">
                             <Clock className="h-3 w-3" />
-                            {formatDistanceToNow(new Date(checkpoint.createdAt), { addSuffix: true })}
+                            {formatDistanceToNow(
+                              new Date(checkpoint.createdAt),
+                              { addSuffix: true },
+                            )}
                           </span>
                         </div>
-                        <h4 className="font-semibold">{checkpoint.description}</h4>
+                        <h4 className="font-semibold">
+                          {checkpoint.description}
+                        </h4>
                       </div>
                     </div>
 
@@ -133,8 +149,10 @@ export function CheckpointTimeline({ checkpoints, onCheckpointClick }: Checkpoin
                         size="sm"
                         className="h-6 px-2"
                         onClick={(e) => {
-                          e.stopPropagation()
-                          navigator.clipboard.writeText(checkpoint.checkpointHash)
+                          e.stopPropagation();
+                          navigator.clipboard.writeText(
+                            checkpoint.checkpointHash,
+                          );
                         }}
                       >
                         Copy
@@ -170,7 +188,11 @@ export function CheckpointTimeline({ checkpoints, onCheckpointClick }: Checkpoin
                       <div className="flex items-center gap-2 flex-wrap">
                         <Users className="h-3 w-3 text-muted-foreground" />
                         {checkpoint.collaborators.slice(0, 3).map((addr) => (
-                          <Badge key={addr} variant="outline" className="text-xs">
+                          <Badge
+                            key={addr}
+                            variant="outline"
+                            className="text-xs"
+                          >
                             {formatAddress(addr)}
                           </Badge>
                         ))}
@@ -186,8 +208,8 @@ export function CheckpointTimeline({ checkpoints, onCheckpointClick }: Checkpoin
               </CardContent>
             </Card>
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

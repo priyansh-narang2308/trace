@@ -123,6 +123,7 @@ export default function ProjectDetailPage({
   }, [projectId, address, router]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProjectDetail();
   }, [fetchProjectDetail]);
 
