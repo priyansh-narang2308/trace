@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useState, useEffect, useCallback, use } from "react";
@@ -18,6 +17,10 @@ import { ProjectFollowButton } from "@/components/projects/project-follow-button
 import { InstantSearchModal } from "@/components/search/instant-search-modal";
 import { AICheckpointAssistant } from "@/components/ai/ai-checkpoint-assistant";
 import { LiveEvolutionView } from "@/components/projects/live-evolution-view";
+import { ExportPanel } from "@/components/projects/export-panel";
+import { ProjectComparison } from "@/components/projects/project-comparison";
+import { ErrorBoundary } from "@/components/ui/error-handling";
+import { ProjectSkeleton } from "@/components/ui/loading-states";
 import { CheckpointCreationForm } from "@/components/checkpoints/checkpoint-creation-form";
 import { TxConfirmation } from "@/components/checkpoints/tx-confirmation";
 import { useMonadCheckpointTx } from "@/hooks/use-monad-checkpoint-tx";
@@ -580,10 +583,33 @@ export default function ProjectDetailPage({
           </div>
 
           <div className="space-y-6">
-            <CollaboratorManager
-              projectId={project.projectId}
-              onCollaboratorChange={fetchProjectDetail}
-            />
+            <ErrorBoundary fallbackMessage="Failed to load collaborator manager">
+              <CollaboratorManager
+                projectId={project.projectId}
+                onCollaboratorChange={fetchProjectDetail}
+              />
+            </ErrorBoundary>
+
+            <ErrorBoundary fallbackMessage="Failed to load export panel">
+              <ExportPanel
+                projectData={{
+                  projectId: project.projectId,
+                  projectName: project.name,
+                  checkpoints: project.checkpoints.map((cp) => ({
+                    checkpointHash: cp.checkpointHash || "",
+                    description: cp.description || "",
+                    checkpointType: cp.checkpointType || "MILESTONE",
+                    creatorAddress: cp.creatorAddress || "",
+                    timestamp: cp.timestamp || new Date().toISOString(),
+                    txHash: cp.txHash || null,
+                  })),
+                  collaborators: project.collaborators.map((c) => ({
+                    address: c.address || "",
+                    addedAt: new Date().toISOString(),
+                  })),
+                }}
+              />
+            </ErrorBoundary>
 
             <Card className="bg-ink border border-border shadow-key">
               <CardHeader className="pb-3 border-b border-border">
@@ -605,6 +631,10 @@ export default function ProjectDetailPage({
             </Card>
           </div>
         </div>
+
+        <ErrorBoundary fallbackMessage="Failed to load project comparison">
+          <ProjectComparison currentProjectId={project.projectId} />
+        </ErrorBoundary>
       </main>
     </div>
   );

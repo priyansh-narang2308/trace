@@ -32,8 +32,8 @@ export function WalletConnect() {
             }
             className="
               cursor-pointer
-              bg-[#ff6363]
-              hover:bg-[#ff6363]/90
+              bg-coral-pulse
+              hover:bg-coral-pulse/90
               text-white
               font-semibold
               text-[13px]
