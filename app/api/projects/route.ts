@@ -32,6 +32,14 @@ export async function POST(request: NextRequest) {
         isPublic: Boolean(isPublic),
         ownerAddress: ownerAddress.toLowerCase(),
       },
+      include: {
+        _count: {
+          select: {
+            checkpoints: true,
+            collaborators: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json(

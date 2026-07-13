@@ -26,6 +26,7 @@ export function CreateProjectForm({
   onCancel,
 }: CreateProjectFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState<ProjectFormData>({
     projectId: "",
     name: "",
@@ -36,6 +37,7 @@ export function CreateProjectForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage("");
 
     try {
       const projectId = formData.projectId || `trace-${Date.now()}`;
@@ -43,8 +45,13 @@ export function CreateProjectForm({
         ...formData,
         projectId,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Failed to create project:", error);
+      const msg =
+        error instanceof Error
+          ? error.message
+          : "Failed to create project. Please try again.";
+      setErrorMessage(msg);
     } finally {
       setIsLoading(false);
     }
@@ -53,11 +60,14 @@ export function CreateProjectForm({
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
+    setErrorMessage("");
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
+  const isFormValid =
+    formData.name.trim() !== "" && formData.description.trim() !== "";
 
   return (
     <Card className="bg-[#07080a] border border-[#363739] shadow-key">
@@ -69,6 +79,11 @@ export function CreateProjectForm({
       </CardHeader>
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-5">
+          {errorMessage && (
+            <div className="p-3.5 rounded-xl bg-[#ff2a2a]/15 border border-[#ff2a2a]/40 text-[#ff6363] text-[13px] font-sans flex items-center gap-2 animate-fade-in">
+              <span>⚠️ {errorMessage}</span>
+            </div>
+          )}
           <div className="space-y-2">
             <Label
               htmlFor="name"
@@ -167,8 +182,12 @@ export function CreateProjectForm({
             )}
             <Button
               type="submit"
-              disabled={isLoading}
-              className="cursor-pointer bg-[#e6e6e6] hover:bg-[#ffffff] text-[#111214] font-medium text-[13px] h-9 px-5 rounded-lg shadow-sm"
+              disabled={isLoading || !isFormValid}
+              className={`${
+                isFormValid
+                  ? "cursor-pointer bg-[#e6e6e6] hover:bg-[#ffffff] text-[#111214]"
+                  : "cursor-not-allowed bg-[#363739] text-[#777777]"
+              } font-medium text-[13px] h-9 px-5 rounded-lg shadow-sm`}
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               <span>Deploy Project Entry</span>

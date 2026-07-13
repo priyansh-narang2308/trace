@@ -24,6 +24,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
+  X,
 } from "lucide-react";
 import SideRays from "@/components/SideRays";
 
@@ -79,13 +80,17 @@ export default function ProjectsPage() {
         }),
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        setProjects((prev) => [result.project, ...prev]);
-        setShowCreateForm(false);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to create project");
       }
+
+      const result = await response.json();
+      setProjects((prev) => [result.project, ...prev]);
+      setShowCreateForm(false);
     } catch (error) {
       console.error("Failed to create project:", error);
+      throw error;
     }
   };
 
@@ -154,8 +159,8 @@ export default function ProjectsPage() {
               TRACE
             </span>
           </Link>
-          <div className="flex items-center gap-3">
-            <span className="hidden sm:flex items-center gap-1 text-[12px] font-mono text-[#59d499] px-2.5 py-1 rounded-full bg-[#1b1c1e] border border-[#363739]">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            <span className="hidden sm:flex items-center gap-1 text-[11px] sm:text-[12px] font-mono text-[#59d499] px-2 sm:px-2.5 py-1 rounded-full bg-[#1b1c1e] border border-[#363739] shrink-0">
               <ShieldCheck className="h-3.5 w-3.5 text-[#59d499]" />
               <span>Monad Testnet</span>
             </span>
@@ -179,7 +184,12 @@ export default function ProjectsPage() {
             onClick={() => setShowCreateForm(!showCreateForm)}
             className="cursor-pointer bg-[#e6e6e6] hover:bg-[#ffffff] text-[#111214] font-medium text-[13px] px-5 h-10 rounded-lg shadow-sm gap-2"
           >
-            <Plus className="h-4 w-4" />
+            {showCreateForm ? (
+              <X className="h-4 w-4" />
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
+
             <span>{showCreateForm ? "Close Drawer" : "New Project"}</span>
           </Button>
         </div>

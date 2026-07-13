@@ -22,7 +22,7 @@ export function WalletConnect() {
 
   if (isConnected && address) {
     return (
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 shrink-0">
         {isWrongChain && (
           <Button
             onClick={() =>
@@ -36,18 +36,26 @@ export function WalletConnect() {
               hover:bg-coral-pulse/90
               text-white
               font-semibold
-              text-[13px]
-              h-11
-              px-5
+              text-[12px]
+              sm:text-[13px]
+              h-9
+              sm:h-10
+              px-3
+              sm:px-3.5
               rounded-xl
-              shadow-lg
-              gap-2
+              shadow-[0_0_15px_rgba(255,42,42,0.5)]
+              flex
+              items-center
+              gap-1.5
               transition-all
               hover:scale-[1.02]
+              shrink-0
+              animate-pulse
             "
+            title="Switch your wallet to Monad Testnet (Chain ID 10143)"
           >
-            <AlertTriangle className="h-4 w-4" />
-            Switch Monad
+            <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+            <span>Switch Monad</span>
           </Button>
         )}
 
@@ -61,24 +69,40 @@ export function WalletConnect() {
               border
               border-[#363739]
               font-mono
-              text-[14px]
-              h-11
-              px-5
+              text-[11px]
+              sm:text-[13px]
+              h-8
+              sm:h-10
+              px-2.5
+              sm:px-3.5
               rounded-xl
               shadow-lg
               flex
               items-center
-              gap-3
+              gap-1.5
+              sm:gap-2
               transition-all
               hover:border-[#ff6363]/50
               focus:outline-none
               focus:ring-2
               focus:ring-[#ff6363]/30
+              shrink-0
             "
           >
-            <div className="h-2.5 w-2.5 rounded-full bg-[#59d499] animate-pulse" />
+            <div
+              className={`h-2 w-2 rounded-full ${
+                isWrongChain
+                  ? "bg-coral-pulse shadow-[0_0_8px_rgba(255,42,42,0.8)]"
+                  : "bg-[#59d499] shadow-[0_0_8px_rgba(89,212,153,0.8)]"
+              } animate-pulse shrink-0`}
+              title={
+                isWrongChain
+                  ? `Wrong Chain (${chainId})`
+                  : "Connected to Monad Testnet (10143)"
+              }
+            />
 
-            <span>
+            <span className="truncate">
               {address.slice(0, 6)}...{address.slice(-4)}
             </span>
           </DropdownMenuTrigger>
@@ -94,6 +118,7 @@ export function WalletConnect() {
               rounded-xl
               p-1
               w-56
+              z-50
             "
           >
             <div
@@ -108,10 +133,51 @@ export function WalletConnect() {
                 mb-1
               "
             >
-              Connected to Monad Testnet
-              <br />
-              Chain ID: 10143
+              {isWrongChain ? (
+                <>
+                  <div className="text-coral-pulse font-bold flex items-center gap-1.5 mb-1">
+                    <AlertTriangle className="h-3.5 w-3.5" />
+                    <span>Wrong Chain ({chainId || "Unknown"})</span>
+                  </div>
+                  <span>Target: Monad Testnet (10143)</span>
+                </>
+              ) : (
+                <>
+                  <div className="text-[#59d499] font-bold flex items-center gap-1.5 mb-1">
+                    <div className="h-2 w-2 rounded-full bg-[#59d499]" />
+                    <span>Monad Testnet Active</span>
+                  </div>
+                  <span>Chain ID: 10143</span>
+                </>
+              )}
             </div>
+
+            {isWrongChain && (
+              <DropdownMenuItem
+                onClick={() =>
+                  switchChain?.({
+                    chainId: MONAD_TESTNET_ID,
+                  })
+                }
+                className="
+                  cursor-pointer
+                  flex
+                  items-center
+                  gap-2
+                  px-3
+                  py-2
+                  text-[13px]
+                  rounded-lg
+                  text-coral-pulse
+                  hover:bg-coral-pulse/15
+                  font-semibold
+                  mb-1
+                "
+              >
+                <AlertTriangle className="h-4 w-4" />
+                <span>Switch to Monad (10143)</span>
+              </DropdownMenuItem>
+            )}
 
             <DropdownMenuItem
               onClick={() => disconnect()}
