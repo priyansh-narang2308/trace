@@ -1,31 +1,24 @@
 import Link from "next/link";
 import { WalletConnect } from "@/components/wallet-connect";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowRight,
-  ShieldCheck,
-  Zap,
-  GitBranch,
-  Terminal,
-  Layers,
-} from "lucide-react";
+import { ArrowRight, ShieldCheck, Zap, Terminal, Layers } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-void-black text-pure-white font-sans selection:bg-[#ff6363]/30 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-void-black text-pure-white font-sans selection:bg-coral-pulse/30 selection:text-white">
       <div className="sticky top-4 z-50 px-4 max-w-5xl mx-auto w-full">
-        <header className="flex items-center justify-between px-5 py-3 rounded-full border border-[#363739] bg-[#040506]/80 backdrop-blur-xl shadow-key-subtle">
+        <header className="flex items-center justify-between px-5 py-3 rounded-full border border-[#363739] bg-void-black/80 backdrop-blur-xl shadow-key-subtle">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="h-5 w-5 rounded-xs bg-coral-pulse rotate-45 shrink-0 flex items-center justify-center shadow-sm" />
-            <span className="text-sm font-medium tracking-tight text-[#ffffff] font-sans">
+            <span className="text-sm font-medium tracking-tight text-pure-white font-sans">
               TRACE
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-6 text-[13px] font-medium text-[#9c9c9d]">
+          <nav className="hidden md:flex items-center gap-6 text-[13px] font-medium text-ash">
             <Link
               href="/projects"
-              className="transition-colors hover:text-[#ffffff]"
+              className="transition-colors hover:text-pure-white"
             >
               Dashboard
             </Link>

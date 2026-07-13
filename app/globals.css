@@ -36,10 +36,12 @@
   --color-slate: #2f3031;
   --color-pure-white: #ffffff;
   --color-coral-pulse: #ff6363;
+  --color-emerald-verify: #59d499;
   --color-ember-hush: #452324;
   --color-electric-sky: #63a1ff;
   --color-cobalt-edge: #143ca3;
   --color-deep-space: #02193b;
+  --color-border-subtle: #363739;
   --shadow-key: rgba(255, 255, 255, 0.05) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.25) 0px 0px 0px 1px, rgba(0, 0, 0, 0.2) 0px -1px 0px 0px inset;
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
