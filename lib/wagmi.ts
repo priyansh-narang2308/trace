@@ -1,9 +1,9 @@
 import { createConfig, http } from 'wagmi'
 
 export const monad = {
-  id: 143,
-  name: 'Monad',
-  network: 'monad',
+  id: 10143,
+  name: 'Monad Testnet',
+  network: 'monad-testnet',
   nativeCurrency: {
     decimals: 18,
     name: 'MON',
@@ -11,12 +11,13 @@ export const monad = {
   },
   rpcUrls: {
     default: {
-      http: ['https://rpc.monad.xyz'],
+      http: ['https://testnet-rpc.monad.xyz'],
     },
   },
   blockExplorers: {
-    default: { name: 'MonadVision', url: 'https://monadvision.com' },
+    default: { name: 'MonadVision Testnet', url: 'https://testnet.monadvision.com' },
   },
+  testnet: true,
 } as const
 
 export const config = createConfig({
