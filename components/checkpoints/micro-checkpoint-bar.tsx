@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAccount } from "wagmi";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -54,7 +55,11 @@ export function MicroCheckpointBar({
 
   const triggerQuickAnchor = useCallback(
     async (descText: string, type: string) => {
-      if (!address || !descText.trim() || isLoading) return;
+      if (!address) {
+        toast.error("Connect wallet to anchor commits");
+        return;
+      }
+      if (!descText.trim() || isLoading) return;
 
       setIsLoading(true);
       setStatus("IDLE");
@@ -93,6 +98,7 @@ export function MicroCheckpointBar({
         setMessage(
           `Micro-anchor anchored to ${checkpointHash.slice(0, 10)}...`,
         );
+        toast.success(`Sub-second micro-checkpoint anchored (${checkpointHash.slice(0, 8)}...)!`);
         setTimeout(() => setStatus("IDLE"), 3000);
         onSuccess?.(data.checkpoint);
       } catch (err: unknown) {
@@ -102,6 +108,7 @@ export function MicroCheckpointBar({
             : "Error anchoring micro-checkpoint";
         setStatus("ERROR");
         setMessage(errMsg);
+        toast.error(errMsg);
       } finally {
         setIsLoading(false);
       }

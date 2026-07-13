@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Bookmark, BookmarkCheck, Loader2, Users } from "lucide-react";
 
@@ -30,13 +31,16 @@ export function ProjectFollowButton({
   }, [projectId, address]);
 
   const toggleFollow = async () => {
-    if (!isConnected || !address || isLoading) return;
+    if (!isConnected || !address || isLoading) {
+      if (!isConnected) toast.error("Connect wallet to follow Enclaves");
+      return;
+    }
 
     setIsLoading(true);
     const nextState = !isFollowing;
 
     try {
-      await fetch(`/api/projects/${encodeURIComponent(projectId)}/follow`, {
+      const res = await fetch(`/api/projects/${encodeURIComponent(projectId)}/follow`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -45,13 +49,17 @@ export function ProjectFollowButton({
         }),
       });
 
+      if (!res.ok) throw new Error("Failed to toggle follow");
+
       setIsFollowing(nextState);
       setFollowerCount((prev) => (nextState ? prev + 1 : Math.max(0, prev - 1)));
 
       const storageKey = `trace_following_${projectId}_${address}`;
       localStorage.setItem(storageKey, nextState ? "true" : "false");
+      toast.success(nextState ? "Following Monad Enclave!" : "Unfollowed Enclave");
     } catch (err) {
       console.error("Failed to toggle follow status:", err);
+      toast.error("Could not update follow status");
     } finally {
       setIsLoading(false);
     }

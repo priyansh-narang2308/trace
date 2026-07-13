@@ -18,7 +18,7 @@ export default function Home() {
           <nav className="hidden md:flex items-center gap-6 text-[13px] font-medium text-ash">
             <Link
               href="/projects"
-              className="transition-colors hover:text-pure-white"
+              className="transition-colors cursor-pointer hover:text-pure-white"
             >
               Dashboard
             </Link>
@@ -26,18 +26,33 @@ export default function Home() {
               href="https://docs.monad.xyz"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors hover:text-[#ffffff]"
+              className="transition-colors cursor-pointer hover:text-[#ffffff]"
             >
               Monad Docs
             </a>
-            <span className="text-[11px] uppercase font-mono px-2 py-0.5 rounded bg-[#1b1c1e] text-[#9c9c9d] border border-[#363739]">
+            <span className="text-[11px] uppercase font-mono px-2 py-0.5 rounded bg-[#1b1c1e] text-[#9c9c9d] border cursor-pointer border-[#363739]">
               Chain 10143
             </span>
           </nav>
 
           <div className="flex items-center gap-3">
             <Link href="/projects">
-              <Button className="bg-[#e6e6e6] hover:bg-[#ffffff] text-[#111214] font-medium text-[13px] px-3.5 py-1.5 h-8 rounded-lg shadow-sm transition-all">
+              <Button
+                className="
+      bg-white
+      cursor-pointer
+      hover:bg-white/90
+      text-[#111214]
+      font-semibold
+      text-[14px]
+      px-6
+      h-11
+      rounded-xl
+      shadow-lg
+      transition-all
+      hover:scale-[1.02]
+    "
+              >
                 Open Dashboard
               </Button>
             </Link>
@@ -49,11 +64,6 @@ export default function Home() {
       <main className="flex-1 max-w-[1200px] mx-auto px-6 pt-24 pb-32 flex flex-col items-center justify-center text-center relative overflow-hidden w-full">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-linear-to-tr from-[#143ca3]/40 via-[#63a1ff]/20 to-[#ff6363]/30 blur-[90px] pointer-events-none rounded-full" />
         <div className="absolute top-1/3 left-1/3 w-[300px] h-[150px] bg-[#ff6363]/25 blur-[70px] pointer-events-none rounded-full rotate-12" />
-
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1b1c1e] border border-[#363739] text-[#e6e6e6] text-[12px] font-mono mb-8 relative z-10 shadow-sm">
-          <Zap className="h-3.5 w-3.5 text-[#ff6363]" />
-          <span>Monad 1-Second Finality &bull; `$0.0001` Gas Fees</span>
-        </div>
 
         <h1 className="max-w-4xl text-[44px] sm:text-[56px] font-normal tracking-[0.22px] leading-[1.17] text-[#ffffff] mb-6 relative z-10 font-sans">
           Your shortcut to <br className="hidden sm:inline" />
@@ -70,12 +80,12 @@ export default function Home() {
 
         <div className="flex flex-col sm:flex-row items-center gap-3.5 mb-24 relative z-10">
           <Link href="/projects" className="w-full sm:w-auto">
-            <Button className="bg-[#e6e6e6] hover:bg-[#ffffff] text-[#111214] text-[14px] font-medium px-6 h-11 rounded-lg shadow-sm gap-2 transition-all w-full sm:w-auto">
+            <Button className="bg-[#e6e6e6] hover:bg-[#ffffff] text-[#111214] text-[14px] font-medium px-6 h-11 rounded-lg shadow-sm gap-2 cursor-pointer transition-all w-full sm:w-auto">
               <span>Launch Command Center</span>
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
-          <div className="w-full sm:w-auto">
+          <div className="w-full sm:w-auto cursor-pointer">
             <WalletConnect />
           </div>
         </div>

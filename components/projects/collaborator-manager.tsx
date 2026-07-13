@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,7 +50,9 @@ export function CollaboratorManager({ projectId, onCollaboratorChange }: Collabo
   const handleAddCollaborator = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAddress || !newAddress.startsWith("0x") || newAddress.length !== 42) {
-      setError("Please enter a valid 42-character Ethereum/Monad address (0x...)");
+      const errMsg = "Please enter a valid 42-character Ethereum/Monad address (0x...)";
+      setError(errMsg);
+      toast.error(errMsg);
       return;
     }
 
@@ -71,9 +74,11 @@ export function CollaboratorManager({ projectId, onCollaboratorChange }: Collabo
       setNewAddress("");
       await fetchCollaborators();
       onCollaboratorChange?.();
+      toast.success("Co-signer added to Cryptographic Enclave matrix!");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Error adding collaborator";
       setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -95,9 +100,11 @@ export function CollaboratorManager({ projectId, onCollaboratorChange }: Collabo
 
       await fetchCollaborators();
       onCollaboratorChange?.();
+      toast.success("Collaborator removed from Enclave");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Error removing collaborator";
       setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -106,14 +113,15 @@ export function CollaboratorManager({ projectId, onCollaboratorChange }: Collabo
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
+    toast.success("Collaborator address copied to clipboard!");
     setTimeout(() => setCopiedId(null), 2000);
   };
 
   return (
-    <Card className="bg-[#07080a] border border-[#363739] shadow-key">
-      <CardHeader className="pb-3 border-b border-[#363739]">
-        <CardTitle className="flex items-center gap-2 text-[18px] font-medium text-[#ffffff] font-sans">
-          <Users className="h-5 w-5 text-[#ff6363]" />
+    <Card className="bg-ink border border-border shadow-key">
+      <CardHeader className="pb-3 border-b border-border">
+        <CardTitle className="flex items-center gap-2 text-[18px] font-medium text-pure-white font-sans">
+          <Users className="h-5 w-5 text-coral-pulse" />
           <span>Team & Collaborator Access</span>
         </CardTitle>
       </CardHeader>
@@ -127,12 +135,12 @@ export function CollaboratorManager({ projectId, onCollaboratorChange }: Collabo
               if (error) setError(null);
             }}
             disabled={isLoading}
-            className="bg-[#111214] border-[#363739] text-[#ffffff] font-mono text-[13px] flex-1 focus:border-[#ff6363]"
+            className="bg-obsidian border-border text-pure-white font-mono text-[13px] flex-1 focus:border-coral-pulse"
           />
           <Button
             type="submit"
             disabled={isLoading || !newAddress}
-            className="cursor-pointer bg-[#e6e6e6] hover:bg-[#ffffff] text-[#111214] font-medium text-[13px] shrink-0 gap-2 h-10 px-4 rounded-lg shadow-sm"
+            className="cursor-pointer bg-mist hover:bg-pure-white text-void-black font-medium text-[13px] shrink-0 gap-2 h-10 px-4 rounded-lg shadow-sm"
           >
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -144,27 +152,27 @@ export function CollaboratorManager({ projectId, onCollaboratorChange }: Collabo
         </form>
 
         {error && (
-          <div className="p-3 rounded-md bg-[#1b1c1e] border border-[#ff6363]/40 text-[#ff6363] text-[12px] font-mono">
+          <div className="p-3 rounded-md bg-graphite border border-coral-pulse/40 text-coral-pulse text-[12px] font-mono">
             {error}
           </div>
         )}
 
-        <div className="space-y-3 pt-2 border-t border-[#363739]">
-          <div className="flex items-center justify-between text-[11px] font-mono font-medium text-[#9c9c9d] uppercase tracking-wider">
+        <div className="space-y-3 pt-2 border-t border-border">
+          <div className="flex items-center justify-between text-[11px] font-mono font-medium text-ash uppercase tracking-wider">
             <span>Authorized Checkpoint Signers</span>
             <span>`{collaborators.length}` Total</span>
           </div>
 
           {isFetching ? (
-            <div className="flex items-center justify-center py-8 text-[#9c9c9d]">
-              <Loader2 className="h-5 w-5 animate-spin mr-2 text-[#63a1ff]" />
+            <div className="flex items-center justify-center py-8 text-ash">
+              <Loader2 className="h-5 w-5 animate-spin mr-2 text-electric-sky" />
               <span className="text-[13px] font-mono">Syncing access list...</span>
             </div>
           ) : collaborators.length === 0 ? (
-            <div className="p-6 rounded-lg bg-[#111214]/60 border border-[#363739] text-center">
-              <ShieldCheck className="h-7 w-7 text-[#9c9c9d]/60 mx-auto mb-2" />
-              <p className="text-[13px] font-medium text-[#ffffff]">No co-signers added yet</p>
-              <p className="text-[12px] text-[#9c9c9d] mt-1">
+            <div className="p-6 rounded-lg bg-obsidian/60 border border-border text-center">
+              <ShieldCheck className="h-7 w-7 text-ash/60 mx-auto mb-2" />
+              <p className="text-[13px] font-medium text-pure-white">No co-signers added yet</p>
+              <p className="text-[12px] text-ash mt-1">
                 Add teammate wallet addresses to permit them to submit cryptographically verified checkpoints on your project.
               </p>
             </div>
@@ -173,17 +181,17 @@ export function CollaboratorManager({ projectId, onCollaboratorChange }: Collabo
               {collaborators.map((collab) => (
                 <div
                   key={collab.id}
-                  className="flex items-center justify-between p-3 rounded-lg border border-[#363739] bg-[#111214] hover:border-[#6a6b6c] transition-colors group"
+                  className="flex items-center justify-between p-3 rounded-lg border border-border bg-obsidian hover:border-smoke transition-colors group"
                 >
                   <div className="flex items-center gap-3 overflow-hidden">
-                    <div className="h-8 w-8 rounded-full bg-[#1b1c1e] border border-[#363739] flex items-center justify-center text-[#ff6363] font-mono text-[12px] shrink-0">
+                    <div className="h-8 w-8 rounded-full bg-graphite border border-border flex items-center justify-center text-coral-pulse font-mono text-[12px] shrink-0">
                       0x
                     </div>
                     <div className="overflow-hidden">
-                      <div className="font-mono text-[13px] font-medium text-[#ffffff] truncate">
+                      <div className="font-mono text-[13px] font-medium text-pure-white truncate">
                         {collab.address}
                       </div>
-                      <div className="text-[11px] font-mono text-[#9c9c9d]">
+                      <div className="text-[11px] font-mono text-ash">
                         Added `{new Date(collab.addedAt).toLocaleDateString()}`
                       </div>
                     </div>
@@ -196,10 +204,10 @@ export function CollaboratorManager({ projectId, onCollaboratorChange }: Collabo
                       size="icon"
                       onClick={() => copyToClipboard(collab.address, collab.id)}
                       title="Copy Address"
-                      className="cursor-pointer h-8 w-8 text-[#9c9c9d] hover:text-[#ffffff] hover:bg-[#1b1c1e]"
+                      className="cursor-pointer h-8 w-8 text-ash hover:text-pure-white hover:bg-graphite"
                     >
                       {copiedId === collab.id ? (
-                        <Check className="h-3.5 w-3.5 text-[#59d499]" />
+                        <Check className="h-3.5 w-3.5 text-emerald-verify" />
                       ) : (
                         <Copy className="h-3.5 w-3.5" />
                       )}
@@ -211,7 +219,7 @@ export function CollaboratorManager({ projectId, onCollaboratorChange }: Collabo
                       onClick={() => handleRemoveCollaborator(collab.address)}
                       title="Remove Collaborator"
                       disabled={isLoading}
-                      className="cursor-pointer h-8 w-8 text-[#ff6363] hover:bg-[#1b1c1e]"
+                      className="cursor-pointer h-8 w-8 text-coral-pulse hover:bg-graphite"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>

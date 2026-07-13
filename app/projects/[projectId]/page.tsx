@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, use } from "react";
 import { useAccount } from "wagmi";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 import { WalletConnect } from "@/components/wallet-connect";
 import { CollaboratorManager } from "@/components/projects/collaborator-manager";
 import { CloneProjectModal } from "@/components/projects/clone-project-modal";
@@ -14,6 +15,9 @@ import { RealtimeTimeline } from "@/components/checkpoints/realtime-timeline";
 import { LiveCollaborationIndicators } from "@/components/projects/live-collaboration-indicators";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { ProjectFollowButton } from "@/components/projects/project-follow-button";
+import { InstantSearchModal } from "@/components/search/instant-search-modal";
+import { AICheckpointAssistant } from "@/components/ai/ai-checkpoint-assistant";
+import { LiveEvolutionView } from "@/components/projects/live-evolution-view";
 import { CheckpointCreationForm } from "@/components/checkpoints/checkpoint-creation-form";
 import { TxConfirmation } from "@/components/checkpoints/tx-confirmation";
 import { useMonadCheckpointTx } from "@/hooks/use-monad-checkpoint-tx";
@@ -206,6 +210,7 @@ export default function ProjectDetailPage({
             </span>
           </div>
           <div className="flex items-center gap-3">
+            <InstantSearchModal />
             <Button
               variant="outline"
               size="sm"
@@ -229,7 +234,7 @@ export default function ProjectDetailPage({
         )}
 
         {showCloneModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#040506]/80 backdrop-blur-md p-4 animate-fade-in">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-void-black/80 backdrop-blur-md p-4 animate-fade-in">
             <CloneProjectModal
               projectId={project.projectId}
               originalName={project.name}
@@ -248,7 +253,9 @@ export default function ProjectDetailPage({
                 {project.isPublic ? (
                   <>
                     <Globe className="h-3.5 w-3.5 text-emerald-verify" />
-                    <span className="text-emerald-verify">Public Repository</span>
+                    <span className="text-emerald-verify">
+                      Public Repository
+                    </span>
                   </>
                 ) : (
                   <>
@@ -495,6 +502,11 @@ export default function ProjectDetailPage({
           ownerAddress={project.ownerAddress}
         />
 
+        <LiveEvolutionView
+          projectId={project.projectId}
+          checkpoints={project.checkpoints}
+        />
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center justify-between">
@@ -550,10 +562,18 @@ export default function ProjectDetailPage({
             )}
 
             {isOwner && !showCheckpointForm && (
-              <MicroCheckpointBar
-                projectId={project.projectId}
-                onSuccess={() => fetchProjectDetail()}
-              />
+              <div className="space-y-4">
+                <AICheckpointAssistant
+                  projectId={project.projectId}
+                  onApplySuggestion={(s) => {
+                    setShowCheckpointForm(true);
+                  }}
+                />
+                <MicroCheckpointBar
+                  projectId={project.projectId}
+                  onSuccess={() => fetchProjectDetail()}
+                />
+              </div>
             )}
 
             <RealtimeTimeline projectId={project.projectId} />
