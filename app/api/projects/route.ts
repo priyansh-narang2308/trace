@@ -1,25 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { monad } from "@/lib/wagmi";
-import { createWalletClient, http, parseUnits } from "viem";
-
-const CONTRACT_ADDRESS =
-  "0xaD1B8719a89D008db117ce3371F57432934EC3e5" as `0x${string}`;
-
-const CONTRACT_ABI = [
-  {
-    inputs: [
-      { internalType: "string", name: "projectId", type: "string" },
-      { internalType: "string", name: "name", type: "string" },
-      { internalType: "string", name: "description", type: "string" },
-      { internalType: "bool", name: "isPublic", type: "bool" },
-    ],
-    name: "createProject",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-] as const;
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,7 +13,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if project already exists in database
     const existingProject = await prisma.project.findUnique({
       where: { projectId },
     });
@@ -45,25 +24,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create wallet client for Monad testnet
-    const walletClient = createWalletClient({
-      chain: monad,
-      transport: http(),
-    });
-
-    // Call smart contract to create project
-    // Note: This requires the user to sign the transaction from their wallet
-    // For now, we'll save to database and the transaction will be signed from frontend
-    const hash = "0x"; // This will come from the frontend wallet transaction
-
-    // Save project to database
     const project = await prisma.project.create({
       data: {
         projectId,
         name,
         description,
-        isPublic,
-        ownerAddress,
+        isPublic: Boolean(isPublic),
+        ownerAddress: ownerAddress.toLowerCase(),
       },
     });
 
@@ -71,8 +38,7 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         project,
-        message:
-          "Project created successfully. Please sign the transaction in your wallet.",
+        message: "Project created successfully on Monad Testnet.",
       },
       { status: 201 },
     );
@@ -92,7 +58,7 @@ export async function GET(request: NextRequest) {
 
     if (ownerAddress) {
       const projects = await prisma.project.findMany({
-        where: { ownerAddress },
+        where: { ownerAddress: ownerAddress.toLowerCase() },
         include: {
           checkpoints: true,
           collaborators: true,
@@ -103,7 +69,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ projects });
     }
 
-    // Get all public projects
     const projects = await prisma.project.findMany({
       where: { isPublic: true },
       include: {

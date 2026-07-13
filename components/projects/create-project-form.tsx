@@ -1,104 +1,113 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Loader2 } from 'lucide-react'
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2, FolderPlus, Globe, Lock } from "lucide-react";
 
 interface CreateProjectFormProps {
-  onSubmit?: (data: ProjectFormData) => void
-  onCancel?: () => void
+  onSubmit?: (data: ProjectFormData) => void;
+  onCancel?: () => void;
 }
 
 export interface ProjectFormData {
-  projectId: string
-  name: string
-  description: string
-  isPublic: boolean
+  projectId: string;
+  name: string;
+  description: string;
+  isPublic: boolean;
 }
 
-export function CreateProjectForm({ onSubmit, onCancel }: CreateProjectFormProps) {
-  const [isLoading, setIsLoading] = useState(false)
+export function CreateProjectForm({
+  onSubmit,
+  onCancel,
+}: CreateProjectFormProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<ProjectFormData>({
-    projectId: '',
-    name: '',
-    description: '',
+    projectId: "",
+    name: "",
+    description: "",
     isPublic: true,
-  })
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
-      // Generate a unique project ID if not provided
-      const projectId = formData.projectId || `proj-${Date.now()}`
-
+      const projectId = formData.projectId || `trace-${Date.now()}`;
       await onSubmit?.({
         ...formData,
         projectId,
-      })
+      });
     } catch (error) {
-      console.error('Failed to create project:', error)
+      console.error("Failed to create project:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
-    }))
-  }
+    }));
+  };
 
   return (
-    <Card>
+    <Card className="border-primary/20 shadow-md">
       <CardHeader>
-        <CardTitle>Create New Project</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-xl font-bold">
+          <FolderPlus className="h-5 w-5 text-primary" />
+          <span>Create New TRACE Project</span>
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="name">Project Name</Label>
+            <Label htmlFor="name" className="text-sm font-semibold">
+              Project Name
+            </Label>
             <Input
               id="name"
               name="name"
-              placeholder="My Awesome Project"
+              placeholder="e.g. Monad DeFi Aggregator"
               value={formData.name}
               onChange={handleChange}
               required
               disabled={isLoading}
+              className="font-medium"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="projectId">Project ID (optional)</Label>
+            <Label htmlFor="projectId" className="text-sm font-semibold">
+              Onchain Project Identifier (Optional)
+            </Label>
             <Input
               id="projectId"
               name="projectId"
-              placeholder="my-awesome-project"
+              placeholder="monad-defi-aggregator"
               value={formData.projectId}
               onChange={handleChange}
               disabled={isLoading}
+              className="font-mono text-sm"
             />
-            <p className="text-xs text-muted-foreground">
-              Leave empty to auto-generate a unique ID
-            </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description" className="text-sm font-semibold">
+              Description & Hackathon Objectives
+            </Label>
             <Textarea
               id="description"
               name="description"
-              placeholder="Describe your project..."
+              placeholder="Describe what your project builds on Monad..."
               value={formData.description}
               onChange={handleChange}
               rows={4}
@@ -107,7 +116,22 @@ export function CreateProjectForm({ onSubmit, onCancel }: CreateProjectFormProps
             />
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-between rounded-lg border border-border p-3.5 bg-muted/30">
+            <div className="flex items-center gap-2.5">
+              {formData.isPublic ? (
+                <Globe className="h-5 w-5 text-emerald-500" />
+              ) : (
+                <Lock className="h-5 w-5 text-amber-500" />
+              )}
+              <div className="space-y-0.5">
+                <Label
+                  htmlFor="isPublic"
+                  className="text-sm font-medium cursor-pointer"
+                >
+                  {formData.isPublic ? "Public Repository" : "Private Project"}
+                </Label>
+              </div>
+            </div>
             <Switch
               id="isPublic"
               checked={formData.isPublic}
@@ -116,10 +140,9 @@ export function CreateProjectForm({ onSubmit, onCancel }: CreateProjectFormProps
               }
               disabled={isLoading}
             />
-            <Label htmlFor="isPublic">Make project public</Label>
           </div>
 
-          <div className="flex gap-2 justify-end">
+          <div className="flex gap-3 justify-end pt-2">
             {onCancel && (
               <Button
                 type="button"
@@ -130,13 +153,13 @@ export function CreateProjectForm({ onSubmit, onCancel }: CreateProjectFormProps
                 Cancel
               </Button>
             )}
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading} className="shadow-sm">
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create Project
+              Deploy Project Entry
             </Button>
           </div>
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

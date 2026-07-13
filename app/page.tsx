@@ -1,58 +1,84 @@
 import Link from "next/link";
 import { WalletConnect } from "@/components/wallet-connect";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShieldCheck, Zap, GitBranch, Terminal } from "lucide-react";
+import {
+  ArrowRight,
+  ShieldCheck,
+  Zap,
+  GitBranch,
+  Terminal,
+  Layers,
+} from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-linear-to-br from-background via-background/95 to-muted/30">
-      {/* Top Navigation */}
-      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-md">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-linear-to-tr from-indigo-500 to-purple-600 flex items-center justify-center font-black text-white shadow-md">
-              T
-            </div>
-            <span className="text-xl font-bold tracking-tight bg-linear-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+    <div className="min-h-screen flex flex-col bg-void-black text-pure-white font-sans selection:bg-[#ff6363]/30 selection:text-white">
+      <div className="sticky top-4 z-50 px-4 max-w-5xl mx-auto w-full">
+        <header className="flex items-center justify-between px-5 py-3 rounded-full border border-[#363739] bg-[#040506]/80 backdrop-blur-xl shadow-key-subtle">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="h-5 w-5 rounded-xs bg-coral-pulse rotate-45 shrink-0 flex items-center justify-center shadow-sm" />
+            <span className="text-sm font-medium tracking-tight text-[#ffffff] font-sans">
               TRACE
             </span>
-            <span className="hidden sm:inline-block text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
-              Monad Testnet
-            </span>
           </Link>
-          <div className="flex items-center gap-4">
+
+          <nav className="hidden md:flex items-center gap-6 text-[13px] font-medium text-[#9c9c9d]">
+            <Link
+              href="/projects"
+              className="transition-colors hover:text-[#ffffff]"
+            >
+              Dashboard
+            </Link>
+            <a
+              href="https://docs.monad.xyz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-[#ffffff]"
+            >
+              Monad Docs
+            </a>
+            <span className="text-[11px] uppercase font-mono px-2 py-0.5 rounded bg-[#1b1c1e] text-[#9c9c9d] border border-[#363739]">
+              Chain 10143
+            </span>
+          </nav>
+
+          <div className="flex items-center gap-3">
             <Link href="/projects">
-              <Button variant="ghost" size="sm" className="font-medium">
-                Dashboard
+              <Button className="bg-[#e6e6e6] hover:bg-[#ffffff] text-[#111214] font-medium text-[13px] px-3.5 py-1.5 h-8 rounded-lg shadow-sm transition-all">
+                Open Dashboard
               </Button>
             </Link>
             <WalletConnect />
           </div>
-        </div>
-      </header>
+        </header>
+      </div>
 
-      {/* Hero Section */}
-      <main className="flex-1 container mx-auto px-4 py-20 md:py-32 flex flex-col items-center justify-center text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-indigo-500/20 bg-indigo-500/10 text-indigo-400 text-xs font-mono mb-8 animate-fade-in">
-          <Zap className="h-3.5 w-3.5 text-amber-400" />
-          <span>Powered by Monad 1-Second Finality (`10,000+ TPS`)</span>
+      <main className="flex-1 max-w-[1200px] mx-auto px-6 pt-24 pb-32 flex flex-col items-center justify-center text-center relative overflow-hidden w-full">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-linear-to-tr from-[#143ca3]/40 via-[#63a1ff]/20 to-[#ff6363]/30 blur-[90px] pointer-events-none rounded-full" />
+        <div className="absolute top-1/3 left-1/3 w-[300px] h-[150px] bg-[#ff6363]/25 blur-[70px] pointer-events-none rounded-full rotate-12" />
+
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1b1c1e] border border-[#363739] text-[#e6e6e6] text-[12px] font-mono mb-8 relative z-10 shadow-sm">
+          <Zap className="h-3.5 w-3.5 text-[#ff6363]" />
+          <span>Monad 1-Second Finality &bull; `$0.0001` Gas Fees</span>
         </div>
 
-        <h1 className="max-w-4xl text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-none text-foreground mb-6">
-          Real-Time, Verified <br />
-          <span className="bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-            Proof of Contribution.
+        <h1 className="max-w-4xl text-[44px] sm:text-[56px] font-normal tracking-[0.22px] leading-[1.17] text-[#ffffff] mb-6 relative z-10 font-sans">
+          Your shortcut to <br className="hidden sm:inline" />
+          <span className="text-[#ff6363] font-normal">
+            onchain proof of contribution.
           </span>
         </h1>
 
-        <p className="max-w-2xl text-lg sm:text-xl text-muted-foreground mb-10 leading-relaxed font-normal">
-          Anchor your code commits, UI mockups, and collaborative milestones into immutable 1-second micro-checkpoints on Monad Testnet for less than `$0.0001`.
+        <p className="max-w-xl text-[16px] text-[#9c9c9d] mb-10 leading-[1.6] font-normal relative z-10">
+          Anchor git milestones, UI captures, and collaborative hackathon
+          progress into immutable sub-second checkpoints on Monad Testnet
+          without friction.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center gap-4 mb-20 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row items-center gap-3.5 mb-24 relative z-10">
           <Link href="/projects" className="w-full sm:w-auto">
-            <Button size="lg" className="w-full sm:w-auto px-8 h-12 text-base font-semibold shadow-lg shadow-primary/20 gap-2">
-              Explore Dashboard
+            <Button className="bg-[#e6e6e6] hover:bg-[#ffffff] text-[#111214] text-[14px] font-medium px-6 h-11 rounded-lg shadow-sm gap-2 transition-all w-full sm:w-auto">
+              <span>Launch Command Center</span>
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
@@ -61,43 +87,56 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Feature Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl w-full text-left">
-          <div className="p-6 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-xs hover:border-primary/40 transition-all">
-            <div className="h-12 w-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-4">
-              <Terminal className="h-6 w-6" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-[1100px] w-full text-left relative z-10">
+          <div className="p-6 rounded-[16px] bg-[#07080a] border border-[#363739] shadow-key transition-all hover:border-[#6a6b6c] group">
+            <div className="h-12 w-12 rounded-full bg-[#111214] border border-[#363739] flex items-center justify-center text-[#e6e6e6] mb-5 group-hover:border-[#ff6363] transition-colors">
+              <Terminal className="h-5 w-5 text-[#ff6363]" />
             </div>
-            <h3 className="text-lg font-bold mb-2">Instant Micro-Checkpoints</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Don&apos;t wait 12 seconds or pay `$5+` gas fees. Monad&apos;s sub-second block times make continuous development logging seamless.
+            <h3 className="text-[20px] font-medium text-[#ffffff] mb-2 leading-[1.2]">
+              Sub-Second Milestones
+            </h3>
+            <p className="text-[16px] text-[#9c9c9d] leading-[1.6] font-normal">
+              Eliminate block delays. Monad&apos;s high-throughput architecture
+              logs real-time developer activity instantly.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-xs hover:border-primary/40 transition-all">
-            <div className="h-12 w-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 mb-4">
-              <ShieldCheck className="h-6 w-6" />
+          <div className="p-6 rounded-[16px] bg-[#07080a] border border-[#363739] shadow-key transition-all hover:border-[#6a6b6c] group">
+            <div className="h-12 w-12 rounded-full bg-[#111214] border border-[#363739] flex items-center justify-center text-[#e6e6e6] mb-5 group-hover:border-[#63a1ff] transition-colors">
+              <ShieldCheck className="h-5 w-5 text-[#63a1ff]" />
             </div>
-            <h3 className="text-lg font-bold mb-2">Onchain Attribution</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Every milestone is cryptographically signed and stored on Monad (`Chain ID 10143`), giving solo hackers and teams undisputed proof of creation.
+            <h3 className="text-[20px] font-medium text-[#ffffff] mb-2 leading-[1.2]">
+              P-256 Precompile Security
+            </h3>
+            <p className="text-[16px] text-[#9c9c9d] leading-[1.6] font-normal">
+              Native secp256r1 hardware passkey verification at `0x0100`
+              guarantees cryptographically undeniable authorship.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-xs hover:border-primary/40 transition-all">
-            <div className="h-12 w-12 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-400 mb-4">
-              <GitBranch className="h-6 w-6" />
+          <div className="p-6 rounded-[16px] bg-[#07080a] border border-[#363739] shadow-key transition-all hover:border-[#6a6b6c] group">
+            <div className="h-12 w-12 rounded-full bg-[#111214] border border-[#363739] flex items-center justify-center text-[#e6e6e6] mb-5 group-hover:border-[#59d499] transition-colors">
+              <Layers className="h-5 w-5 text-[#59d499]" />
             </div>
-            <h3 className="text-lg font-bold mb-2">Live Timeline Playback</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Watch your project evolve step-by-step. Replay commits, feature additions, and screenshot proofs directly from MonadVision.
+            <h3 className="text-[20px] font-medium text-[#ffffff] mb-2 leading-[1.2]">
+              Collaborative Ledger
+            </h3>
+            <p className="text-[16px] text-[#9c9c9d] leading-[1.6] font-normal">
+              Co-sign project milestones with teammates while retaining
+              individual wallet attribution on every transaction.
             </p>
           </div>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border/40 py-6 text-center text-xs text-muted-foreground font-mono">
-        TRACE &bull; BuildAnything Monad Hackathon &bull; Chain ID 10143
+      <footer className="border-t border-[#363739] py-8 text-center bg-[#040506]">
+        <div className="flex items-center justify-center gap-3 text-[12px] font-mono text-[#6a6b6c] tracking-tight">
+          <span>TRACE v1.0.0</span>
+          <span>|</span>
+          <span>Monad Testnet (`Chain ID 10143`)</span>
+          <span>|</span>
+          <span>Powered by P-256 Precompiles</span>
+        </div>
       </footer>
     </div>
   );
