@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -22,6 +23,7 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
+  ShieldCheck,
 } from "lucide-react";
 
 interface ProjectClient {
@@ -86,28 +88,33 @@ export default function ProjectsPage() {
     }
   };
 
-  const filteredProjects = projects.filter((project) =>
-    project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    project.projectId.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredProjects = projects.filter(
+    (project) =>
+      project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.projectId.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const totalPages = Math.ceil(filteredProjects.length / itemsPerPage) || 1;
   const paginatedProjects = filteredProjects.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-background to-muted p-4">
-        <Card className="w-full max-w-md shadow-xl border-primary/20">
-          <CardHeader>
-            <CardTitle className="text-center text-2xl font-bold">Connect to TRACE</CardTitle>
+      <div className="min-h-screen flex items-center justify-center bg-[#040506] text-[#ffffff] p-6 font-sans">
+        <Card className="w-full max-w-md bg-[#07080a] border border-[#363739] shadow-key">
+          <CardHeader className="pb-3 text-center border-b border-[#363739]">
+            <CardTitle className="text-[22px] font-medium text-[#ffffff]">
+              Connect to TRACE
+            </CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col items-center gap-6 py-6">
-            <p className="text-center text-muted-foreground text-sm leading-relaxed">
-              Connect your Monad Testnet wallet to access your project dashboard, manage real-time cryptographic checkpoints, and collaborate with your team.
+          <CardContent className="flex flex-col items-center gap-6 py-8">
+            <p className="text-center text-[#9c9c9d] text-[14px] leading-[1.6]">
+              Connect your Monad Testnet wallet to access your command
+              dashboard, manage sub-second cryptographic checkpoints, and
+              collaborate with your team.
             </p>
             <WalletConnect />
           </CardContent>
@@ -117,39 +124,47 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-background via-background/98 to-muted/20 pb-16">
-      <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-md">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-linear-to-tr from-indigo-500 to-purple-600 flex items-center justify-center font-black text-white shadow-md">
-              T
-            </div>
-            <span className="text-xl font-bold tracking-tight bg-linear-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+    <div className="min-h-screen bg-[#040506] text-[#ffffff] font-sans selection:bg-[#ff6363]/30 selection:text-white pb-20">
+      <header className="sticky top-0 z-50 border-b border-[#363739] bg-[#040506]/80 backdrop-blur-xl">
+        <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="h-5 w-5 rounded-xs bg-[#ff6363] rotate-45 shrink-0 flex items-center justify-center shadow-sm" />
+            <span className="text-[16px] font-medium tracking-tight text-[#ffffff] font-sans">
               TRACE
             </span>
           </Link>
           <div className="flex items-center gap-3">
+            <span className="hidden sm:flex items-center gap-1 text-[12px] font-mono text-[#59d499] px-2.5 py-1 rounded-full bg-[#1b1c1e] border border-[#363739]">
+              <ShieldCheck className="h-3.5 w-3.5 text-[#59d499]" />
+              <span>Monad Testnet</span>
+            </span>
             <WalletConnect />
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+      <main className="max-w-[1200px] mx-auto px-6 py-10">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
           <div>
-            <h2 className="text-3xl font-extrabold tracking-tight">Project Dashboard</h2>
-            <p className="text-muted-foreground mt-1 text-sm">
-              Deploy, track, and prove your development milestones on Monad Testnet
+            <h1 className="text-[32px] sm:text-[36px] font-normal tracking-[0.2px] text-[#ffffff] leading-[1.15]">
+              Project Command Center
+            </h1>
+            <p className="text-[#9c9c9d] mt-1 text-[15px]">
+              Deploy, track, and anchor cryptographic hackathon milestones on
+              Monad Testnet (`Chain ID 10143`)
             </p>
           </div>
-          <Button onClick={() => setShowCreateForm(!showCreateForm)} size="lg" className="shadow-md gap-2">
+          <Button
+            onClick={() => setShowCreateForm(!showCreateForm)}
+            className="cursor-pointer bg-[#e6e6e6] hover:bg-[#ffffff] text-[#111214] font-medium text-[13px] px-5 h-10 rounded-lg shadow-sm gap-2"
+          >
             <Plus className="h-4 w-4" />
-            <span>New Project</span>
+            <span>{showCreateForm ? "Close Drawer" : "New Project"}</span>
           </Button>
         </div>
 
         {showCreateForm && (
-          <div className="mb-10 animate-fade-in">
+          <div className="mb-12 animate-fade-in">
             <CreateProjectForm
               onSubmit={handleCreateProject}
               onCancel={() => setShowCreateForm(false)}
@@ -157,35 +172,41 @@ export default function ProjectsPage() {
           </div>
         )}
 
-        <div className="flex items-center justify-between gap-4 mb-6">
+        <div className="flex items-center justify-between gap-4 mb-8">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9c9c9d]" />
             <Input
-              placeholder="Search by name, identifier, or description..."
+              placeholder="Search by name, identifier, or objectives..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 setCurrentPage(1);
               }}
-              className="pl-9"
+              className="pl-9 bg-[#111214] border-[#363739] text-[#ffffff] text-[14px] focus:border-[#ff6363]"
             />
           </div>
-          <div className="text-xs font-mono text-muted-foreground">
-            Total Projects: `{filteredProjects.length}`
+          <div className="text-[12px] font-mono text-[#9c9c9d]">
+            Total Anchors: `{filteredProjects.length}`
           </div>
         </div>
 
         {paginatedProjects.length === 0 ? (
-          <Card className="border-dashed bg-card/40">
-            <CardContent className="flex flex-col items-center justify-center py-20">
-              <FolderOpen className="h-16 w-16 text-muted-foreground/60 mb-4" />
-              <h3 className="text-xl font-bold mb-2">No projects discovered</h3>
-              <p className="text-muted-foreground text-center text-sm max-w-sm mb-6">
-                Start your journey by anchoring your first hackathon or team project onto Monad Testnet.
+          <Card className="bg-[#07080a] border border-dashed border-[#363739]">
+            <CardContent className="flex flex-col items-center justify-center py-24">
+              <FolderOpen className="h-14 w-14 text-[#9c9c9d]/40 mb-4" />
+              <h3 className="text-[20px] font-medium text-[#ffffff] mb-2">
+                No projects discovered
+              </h3>
+              <p className="text-[#9c9c9d] text-center text-[14px] max-w-md mb-6 leading-[1.6]">
+                Start your building journey by anchoring your first hackathon
+                entry or team project onto Monad Testnet.
               </p>
-              <Button onClick={() => setShowCreateForm(true)}>
+              <Button
+                onClick={() => setShowCreateForm(true)}
+                className="cursor-pointer bg-[#e6e6e6] hover:bg-[#ffffff] text-[#111214] font-medium text-[13px] h-10 px-5 rounded-lg shadow-sm"
+              >
                 <Plus className="mr-2 h-4 w-4" />
-                Create First Project
+                <span>Create First Project</span>
               </Button>
             </CardContent>
           </Card>
@@ -193,42 +214,52 @@ export default function ProjectsPage() {
           <>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {paginatedProjects.map((project) => (
-                <Link key={project.projectId} href={`/projects/${project.projectId}`} className="group">
-                  <Card className="h-full flex flex-col justify-between hover:shadow-lg hover:border-primary/50 transition-all bg-card/80 backdrop-blur-xs">
-                    <CardHeader className="pb-3">
+                <Link
+                  key={project.projectId}
+                  href={`/projects/${project.projectId}`}
+                  className="group block h-full"
+                >
+                  <Card className="h-full flex flex-col justify-between bg-[#07080a] border border-[#363739] shadow-key hover:border-[#6a6b6c] transition-all">
+                    <CardHeader className="pb-3 border-b border-[#363739]/50">
                       <div className="flex items-start justify-between gap-2">
-                        <CardTitle className="text-lg font-bold group-hover:text-primary transition-colors line-clamp-1">
+                        <CardTitle className="text-[18px] font-medium text-[#ffffff] group-hover:text-[#ff6363] transition-colors line-clamp-1 font-sans">
                           {project.name}
                         </CardTitle>
-                        <span className="shrink-0 p-1 rounded bg-muted/60 text-muted-foreground">
+                        <span className="shrink-0 p-1.5 rounded bg-[#1b1c1e] text-[#9c9c9d] border border-[#363739]">
                           {project.isPublic ? (
-                            <Globe className="h-3.5 w-3.5 text-emerald-500" />
+                            <Globe className="h-3.5 w-3.5 text-[#59d499]" />
                           ) : (
-                            <Lock className="h-3.5 w-3.5 text-amber-500" />
+                            <Lock className="h-3.5 w-3.5 text-[#ff6363]" />
                           )}
                         </span>
                       </div>
-                      <div className="text-xs font-mono text-muted-foreground pt-1 truncate">
+                      <div className="text-[12px] font-mono text-[#9c9c9d] pt-1 truncate">
                         ID: `{project.projectId}`
                       </div>
                     </CardHeader>
-                    <CardContent className="flex flex-col justify-between flex-1">
-                      <p className="text-sm text-muted-foreground mb-6 line-clamp-3 font-normal leading-relaxed">
+                    <CardContent className="flex flex-col justify-between flex-1 pt-4">
+                      <p className="text-[14px] text-[#9c9c9d] mb-6 line-clamp-3 font-normal leading-[1.6]">
                         {project.description}
                       </p>
-                      <div className="pt-4 border-t border-border/40 flex items-center justify-between text-xs text-muted-foreground font-mono">
+                      <div className="pt-3 border-t border-[#363739]/50 flex items-center justify-between text-[12px] text-[#9c9c9d] font-mono">
                         <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-1.5" title="Collaborators">
-                            <Users className="h-3.5 w-3.5 text-indigo-400" />
+                          <div
+                            className="flex items-center gap-1.5"
+                            title="Collaborators"
+                          >
+                            <Users className="h-3.5 w-3.5 text-[#63a1ff]" />
                             <span>{project._count?.collaborators || 0}</span>
                           </div>
-                          <div className="flex items-center gap-1.5" title="Checkpoints">
-                            <Clock className="h-3.5 w-3.5 text-purple-400" />
+                          <div
+                            className="flex items-center gap-1.5"
+                            title="Checkpoints"
+                          >
+                            <Clock className="h-3.5 w-3.5 text-[#ff6363]" />
                             <span>{project._count?.checkpoints || 0}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1 text-primary font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-                          <span>View</span>
+                        <div className="flex items-center gap-1 text-[#ffffff] font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span>Open</span>
                           <ArrowRight className="h-3 w-3" />
                         </div>
                       </div>
@@ -239,8 +270,8 @@ export default function ProjectsPage() {
             </div>
 
             {totalPages > 1 && (
-              <div className="flex items-center justify-between pt-8 border-t mt-8">
-                <span className="text-xs font-mono text-muted-foreground">
+              <div className="flex items-center justify-between pt-8 border-t border-[#363739] mt-10">
+                <span className="text-[12px] font-mono text-[#9c9c9d]">
                   Page `{currentPage}` of `{totalPages}`
                 </span>
                 <div className="flex items-center gap-2">
@@ -249,17 +280,21 @@ export default function ProjectsPage() {
                     size="sm"
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
+                    className="cursor-pointer bg-[#111214] hover:bg-[#1b1c1e] text-[#ffffff] border-[#363739] text-[12px] h-8"
                   >
                     <ChevronLeft className="h-4 w-4" />
-                    Previous
+                    <span>Previous</span>
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    onClick={() =>
+                      setCurrentPage((p) => Math.min(totalPages, p + 1))
+                    }
                     disabled={currentPage === totalPages}
+                    className="cursor-pointer bg-[#111214] hover:bg-[#1b1c1e] text-[#ffffff] border-[#363739] text-[12px] h-8"
                   >
-                    Next
+                    <span>Next</span>
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
