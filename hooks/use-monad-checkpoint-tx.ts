@@ -62,6 +62,42 @@ export interface TxResult {
   error: string | null;
 }
 
+function parseEVMError(err: unknown): string {
+  if (!(err instanceof Error)) return "Transaction failed";
+  const msg = err.message;
+
+  if (msg.includes("UserRejectedRequestError") || msg.includes("rejected the request") || msg.includes("user rejected")) {
+    return "Transaction cancelled in wallet";
+  }
+  if (msg.includes("ContractFunctionRevertedError")) {
+    const reasonMatch = msg.match(/reason:\s*"([^"]+)"/);
+    if (reasonMatch) return `Contract reverted: ${reasonMatch[1]}`;
+    const argsMatch = msg.match(/args:\s*\[([^\]]+)\]/);
+    if (argsMatch) return `Contract reverted with args: ${argsMatch[1]}`;
+    return "Smart contract call reverted. Check that the project is initialized on-chain and you are a collaborator.";
+  }
+  if (msg.includes("InsufficientFundsError") || msg.includes("insufficient funds") || msg.includes("not enough funds")) {
+    return "Insufficient MON balance for transaction gas";
+  }
+  if (msg.includes("estimateGas") || msg.includes("execution reverted")) {
+    return "Transaction would revert. Ensure the project is initialized on-chain and you are an authorized signer.";
+  }
+  if (msg.includes("timeout") || msg.includes("timed out") || msg.includes("TIMEOUT")) {
+    return "Transaction timed out. Monad Testnet may be congested; please retry.";
+  }
+  if (msg.includes("nonce") || msg.includes("Nonce")) {
+    return "Nonce error. Please reset your wallet or try a different account.";
+  }
+  if (msg.includes("NetworkError") || msg.includes("network") || msg.includes("Network")) {
+    return "Network error. Check your RPC connection to Monad Testnet.";
+  }
+
+  if (msg.length > 120) {
+    return msg.slice(0, 120) + "...";
+  }
+  return msg;
+}
+
 export function useMonadCheckpointTx() {
   const { address } = useAccount();
   const publicClient = usePublicClient({ chainId: monadTestnet.id });
@@ -118,7 +154,6 @@ export function useMonadCheckpointTx() {
         const cols = (collaboratorAddrs || []) as `0x${string}`[];
         const cpType = checkpointType ?? 0;
 
-        // Check if project exists on-chain
         setTxResult((prev) => ({ ...prev, status: "PREPARING" }));
 
         const projectData = await publicClient.readContract({
@@ -130,7 +165,6 @@ export function useMonadCheckpointTx() {
 
         const projectOwner = (projectData as readonly [`0x${string}`, ...unknown[]])[0] || zeroAddress;
 
-        // If project doesn't exist on-chain, create it first
         if (projectOwner === zeroAddress) {
           setTxResult((prev) => ({ ...prev, status: "INIT_PROJECT" }));
 
@@ -213,7 +247,7 @@ export function useMonadCheckpointTx() {
 
         return txHash;
       } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : "Transaction failed";
+        const msg = parseEVMError(err);
         setTxResult((prev) => ({
           ...prev,
           status: "FAILED",

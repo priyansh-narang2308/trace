@@ -101,7 +101,7 @@ export function EndToEndTestSuite() {
       setTests((prev) =>
         prev.map((t, idx) =>
           idx === currentIdx
-            ? { ...t, status: "PASSED", durationMs: Math.floor(Math.random() * 80) + 35 }
+            ? { ...t, status: "PASSED", durationMs: 60 + (idx % 10) * 5 }
             : t
         )
       );

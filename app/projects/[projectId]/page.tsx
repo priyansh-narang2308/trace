@@ -553,92 +553,88 @@ export default function ProjectDetailPage({
         )}
 
         {/* Floating Side Dock Navigation System */}
-        <div className="fixed right-5 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3 p-2.5 rounded-2xl bg-ink/90 border border-border shadow-2xl backdrop-blur-xl transition-all hover:border-coral-pulse/40">
-          {[
-            {
-              id: "overview",
-              label: "Overview Dashboard",
-              icon: LayoutDashboard,
-            },
+        <nav className="fixed right-5 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2.5 p-3 rounded-2xl bg-ink/95 border border-border/80 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:border-coral-pulse/40 hover:shadow-[0_0_30px_rgba(255,42,42,0.08)]">
+          {([
+            { id: "overview", label: "Overview Dashboard", icon: LayoutDashboard },
             { id: "evolution", label: "Evolution Replay", icon: Layers },
             { id: "anchor", label: "Anchor Checkpoint", icon: Terminal },
             { id: "timeline", label: "Timeline Ledger", icon: Clock },
             { id: "team", label: "Teammates Access", icon: Users },
             { id: "comparison", label: "Enclave Comparison", icon: GitCompare },
-          ].map((tab) => {
+          ] as const).map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
               <div key={tab.id} className="relative group flex items-center">
-                <div className="absolute right-14 bg-ink border border-border text-pure-white text-[11px] font-mono font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-lg shadow-2xl whitespace-nowrap opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 pointer-events-none origin-right border-l-2 border-l-coral-pulse">
+                <div className="absolute right-14 bg-ink/95 border border-border/80 text-pure-white text-[10px] font-mono font-bold uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-2xl whitespace-nowrap opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 pointer-events-none origin-right border-l-2 border-l-coral-pulse">
                   {tab.label}
                 </div>
                 <button
                   type="button"
-                  onClick={() => {
-                    setActiveTab(tab.id as any);
-                    toast.info(`Swapped to ${tab.label}`);
-                  }}
-                  className={`cursor-pointer h-10 w-10 rounded-xl flex items-center justify-center transition-all ${
+                  onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                  className={`cursor-pointer h-[38px] w-[38px] rounded-[14px] flex items-center justify-center transition-all duration-200 active:scale-95 ${
                     isActive
-                      ? "bg-coral-pulse text-void-black font-bold shadow-[0_0_15px_rgba(255,42,42,0.4)] scale-110"
-                      : "bg-obsidian text-ash hover:text-pure-white hover:bg-graphite"
+                      ? "bg-coral-pulse text-void-black font-bold shadow-[0_0_20px_rgba(255,42,42,0.35)] scale-105"
+                      : "bg-obsidian text-ash hover:text-pure-white hover:bg-graphite border border-transparent hover:border-border/50"
                   }`}
                   aria-label={tab.label}
                 >
-                  <Icon className="h-4.5 w-4.5" />
+                  <Icon className="h-[18px] w-[18px]" />
                 </button>
               </div>
             );
           })}
-        </div>
+        </nav>
 
         {/* Tabbed Content Areas */}
         <div className="min-h-[450px] transition-all duration-300">
           {activeTab === "overview" && (
             <div className="space-y-8 animate-fade-in">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="bg-ink border border-border shadow-key">
-                  <CardContent className="p-6 flex items-center justify-between">
-                    <div>
-                      <div className="text-[12px] font-mono text-ash uppercase">
-                        Total Checkpoints
-                      </div>
-                      <div className="text-[32px] font-medium text-pure-white mt-1">
-                        {project.checkpoints.length}
-                      </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div className="bg-ink border border-border rounded-2xl p-5 shadow-key flex items-center justify-between group hover:border-coral-pulse/20 transition-all">
+                  <div className="space-y-0.5">
+                    <div className="text-[11px] font-mono text-mist uppercase tracking-wider font-semibold">
+                      Checkpoints
                     </div>
-                    <Clock className="h-8 w-8 text-coral-pulse opacity-80" />
-                  </CardContent>
-                </Card>
+                    <div className="text-[30px] font-semibold tracking-tight text-pure-white font-sans">
+                      {project.checkpoints.length}
+                    </div>
+                    <div className="text-[11px] text-ash font-mono">on-chain anchors</div>
+                  </div>
+                  <div className="h-12 w-12 rounded-2xl bg-obsidian border border-border/50 group-hover:border-coral-pulse/30 transition-all flex items-center justify-center">
+                    <Clock className="h-6 w-6 text-coral-pulse" />
+                  </div>
+                </div>
 
-                <Card className="bg-ink border border-border shadow-key">
-                  <CardContent className="p-6 flex items-center justify-between">
-                    <div>
-                      <div className="text-[12px] font-mono text-ash uppercase">
-                        Team Collaborators
-                      </div>
-                      <div className="text-[32px] font-medium text-pure-white mt-1">
-                        {project.collaborators.length}
-                      </div>
+                <div className="bg-ink border border-border rounded-2xl p-5 shadow-key flex items-center justify-between group hover:border-electric-sky/20 transition-all">
+                  <div className="space-y-0.5">
+                    <div className="text-[11px] font-mono text-mist uppercase tracking-wider font-semibold">
+                      Collaborators
                     </div>
-                    <Users className="h-8 w-8 text-electric-sky opacity-80" />
-                  </CardContent>
-                </Card>
+                    <div className="text-[30px] font-semibold tracking-tight text-pure-white font-sans">
+                      {project.collaborators.length}
+                    </div>
+                    <div className="text-[11px] text-ash font-mono">authorized co-signers</div>
+                  </div>
+                  <div className="h-12 w-12 rounded-2xl bg-obsidian border border-border/50 group-hover:border-electric-sky/30 transition-all flex items-center justify-center">
+                    <Users className="h-6 w-6 text-electric-sky" />
+                  </div>
+                </div>
 
-                <Card className="bg-ink border border-border shadow-key">
-                  <CardContent className="p-6 flex items-center justify-between">
-                    <div>
-                      <div className="text-[12px] font-mono text-ash uppercase">
-                        Finality Tier
-                      </div>
-                      <div className="text-[32px] font-medium text-emerald-verify mt-1">
-                        1-Sec
-                      </div>
+                <div className="bg-ink border border-border rounded-2xl p-5 shadow-key flex items-center justify-between group hover:border-emerald-verify/20 transition-all">
+                  <div className="space-y-0.5">
+                    <div className="text-[11px] font-mono text-mist uppercase tracking-wider font-semibold">
+                      Finality Tier
                     </div>
-                    <CheckCircle2 className="h-8 w-8 text-emerald-verify opacity-80" />
-                  </CardContent>
-                </Card>
+                    <div className="text-[30px] font-semibold tracking-tight text-emerald-verify font-sans">
+                      Sub-Sec
+                    </div>
+                    <div className="text-[11px] text-ash font-mono">Monad ~0.8s latency</div>
+                  </div>
+                  <div className="h-12 w-12 rounded-2xl bg-obsidian border border-border/50 group-hover:border-emerald-verify/30 transition-all flex items-center justify-center">
+                    <CheckCircle2 className="h-6 w-6 text-emerald-verify" />
+                  </div>
+                </div>
               </div>
 
               <LiveCollaborationIndicators
@@ -649,16 +645,22 @@ export default function ProjectDetailPage({
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                 <div className="lg:col-span-2 space-y-6">
-                  <Card className="bg-ink border border-border shadow-key">
-                    <CardHeader className="pb-3 border-b border-border">
-                      <CardTitle className="text-[15px] font-medium text-pure-white font-sans">
-                        Project Meta Objectives
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-5 text-[14px] text-ash leading-relaxed font-sans">
-                      {project.description}
-                    </CardContent>
-                  </Card>
+                  <div className="bg-ink border border-border rounded-2xl overflow-hidden shadow-key">
+                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-border bg-obsidian/50">
+                      <span className="text-[13px] font-mono font-semibold text-mist uppercase tracking-wider flex items-center gap-2">
+                        <Layers className="h-4 w-4 text-coral-pulse" />
+                        Checkpoint Stream
+                      </span>
+                      {project.checkpoints.length > 0 && (
+                        <span className="text-[11px] font-mono text-ash bg-graphite px-2.5 py-1 rounded-full border border-border">
+                          {project.checkpoints.length} anchored
+                        </span>
+                      )}
+                    </div>
+                    <div className="p-5">
+                      <RealtimeTimeline projectId={project.projectId} />
+                    </div>
+                  </div>
                 </div>
                 <div className="space-y-6">
                   <ErrorBoundary fallbackMessage="Failed to load export panel">

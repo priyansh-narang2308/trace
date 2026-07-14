@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -44,6 +44,7 @@ export function CheckpointCreationForm({
   onCancel,
 }: CheckpointFormProps) {
   const { address } = useAccount();
+  const { data: walletClient } = useWalletClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [description, setDescription] = useState("");
@@ -122,6 +123,19 @@ export function CheckpointCreationForm({
     try {
       const checkpointHash = generateCheckpointHash(description, checkpointType, address);
 
+      let signature = "";
+      if (walletClient) {
+        try {
+          const message = `TRACE Checkpoint Anchor\nProject: ${projectId}\nHash: ${checkpointHash}\nTime: ${Date.now()}`;
+          signature = await walletClient.signMessage({
+            message,
+            account: address as `0x${string}`,
+          });
+        } catch {
+          // signature is optional for now; will be validated if present
+        }
+      }
+
       setStatus("UPLOADING");
       setStatusMessage("Uploading checkpoint to Monad Testnet...");
       setUploadProgress(30);
@@ -139,6 +153,10 @@ export function CheckpointCreationForm({
 
       if (selectedCollaborators.length > 0) {
         formData.append("collaborators", JSON.stringify(selectedCollaborators));
+      }
+
+      if (signature) {
+        formData.append("signature", signature);
       }
 
       setUploadProgress(60);

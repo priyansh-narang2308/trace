@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { recoverMessageAddress } from "viem";
 import { prisma } from "@/lib/prisma";
 import { uploadToBlob } from "@/lib/blob";
 
@@ -13,12 +14,34 @@ export async function POST(request: NextRequest) {
     const txHash = (formData.get("txHash") as string) || "0x";
     const file = formData.get("file") as File | null;
     const collaborators = formData.get("collaborators") as string | null;
+    const signature = formData.get("signature") as string | null;
 
     if (!projectId || !hash || !description || !checkpointType || !creatorAddress) {
       return NextResponse.json(
         { error: "Missing required fields: projectId, hash, description, checkpointType, creatorAddress" },
         { status: 400 }
       );
+    }
+
+    // Verify EIP-191 signature if provided
+    if (signature) {
+      try {
+        const recoveredAddress = await recoverMessageAddress({
+          message: `TRACE Checkpoint Anchor\nProject: ${projectId}\nHash: ${hash}\nTime: ${Date.now()}`,
+          signature: signature as `0x${string}`,
+        });
+        if (recoveredAddress.toLowerCase() !== creatorAddress.toLowerCase()) {
+          return NextResponse.json(
+            { error: "Signature does not match creator address" },
+            { status: 403 }
+          );
+        }
+      } catch {
+        return NextResponse.json(
+          { error: "Invalid signature format" },
+          { status: 400 }
+        );
+      }
     }
 
     const project = await prisma.project.findUnique({

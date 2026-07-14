@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       creatorAddress: cp.creatorAddress,
       timestamp: cp.timestamp.toISOString(),
       txHash: cp.txHash || null,
-      likes: Math.floor(Math.random() * 50) + 5,
+      likes: 0,
     }));
 
     return NextResponse.json({ feed, total, offset, limit }, { status: 200 });

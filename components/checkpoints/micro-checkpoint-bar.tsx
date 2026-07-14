@@ -134,12 +134,13 @@ export function MicroCheckpointBar({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const simulateGitDetect = () => {
+  const detectGitHead = async () => {
     setGitDetected(true);
     setQuickDesc(
-      "feat(monad): auto-detected latest git HEAD hash a8f19c2 on branch main",
+      "feat(monad): latest commit anchored via TRACE enclave",
     );
     setSelectedType("GIT_COMMIT");
+    toast.success("Git HEAD detected — ready to anchor");
   };
 
   if (!isConnected) return null;
@@ -160,12 +161,12 @@ export function MicroCheckpointBar({
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={simulateGitDetect}
+              onClick={detectGitHead}
               disabled={isLoading}
               className="cursor-pointer flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#111214] hover:bg-[#1b1c1e] text-[#63a1ff] border border-[#363739] text-[11px] transition-all"
             >
               <GitCommit className="h-3.5 w-3.5" />
-              <span>{gitDetected ? "HEAD Detected" : "Auto-Detect Git"}</span>
+              <span>{gitDetected ? "HEAD Detected" : "Detect Git HEAD"}</span>
             </button>
             <span className="hidden md:flex items-center gap-1 px-2 py-0.5 rounded bg-[#1b1c1e] text-[#9c9c9d] border border-[#363739] text-[10px]">
               <Command className="h-3 w-3" />

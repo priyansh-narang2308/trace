@@ -110,7 +110,7 @@ export function NftBadgeMatrix() {
       setBadges((prev) =>
         prev.map((b) =>
           b.id === badgeId
-            ? { ...b, mintAddress: `0x0100000000000000000000000000${Math.floor(1000 + Math.random() * 9000)}` }
+            ? { ...b, mintAddress: b.mintAddress || "0x0100000000000000000000000000000000000000" }
             : b
         )
       );
