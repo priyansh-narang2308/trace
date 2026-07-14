@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -46,33 +47,34 @@ export function SocialFeed() {
   const [offset, setOffset] = useState(0);
   const [total, setTotal] = useState(0);
 
-  const fetchFeed = useCallback(async (reset?: boolean) => {
-    if (reset) {
-      setIsLoading(true);
-      setOffset(0);
-    }
-    const currentOffset = reset ? 0 : offset;
-    try {
-      const res = await fetch(
-        `/api/feed?offset=${currentOffset}&limit=20`
-      );
-      if (res.ok) {
-        const data = await res.json();
-        if (reset) {
-          setItems(data.feed || []);
-        } else {
-          setItems((prev) => [...prev, ...(data.feed || [])]);
-        }
-        setTotal(data.total || 0);
-        setOffset(currentOffset + (data.feed?.length || 0));
+  const fetchFeed = useCallback(
+    async (reset?: boolean) => {
+      if (reset) {
+        setIsLoading(true);
+        setOffset(0);
       }
-    } catch {
-      toast.error("Failed to load feed");
-    } finally {
-      setIsLoading(false);
-      setIsLoadingMore(false);
-    }
-  }, [offset]);
+      const currentOffset = reset ? 0 : offset;
+      try {
+        const res = await fetch(`/api/feed?offset=${currentOffset}&limit=20`);
+        if (res.ok) {
+          const data = await res.json();
+          if (reset) {
+            setItems(data.feed || []);
+          } else {
+            setItems((prev) => [...prev, ...(data.feed || [])]);
+          }
+          setTotal(data.total || 0);
+          setOffset(currentOffset + (data.feed?.length || 0));
+        }
+      } catch {
+        toast.error("Failed to load feed");
+      } finally {
+        setIsLoading(false);
+        setIsLoadingMore(false);
+      }
+    },
+    [offset],
+  );
 
   useEffect(() => {
     fetchFeed(true);
@@ -91,7 +93,7 @@ export function SocialFeed() {
           };
         }
         return item;
-      })
+      }),
     );
   };
 
@@ -103,7 +105,7 @@ export function SocialFeed() {
           toast.success(
             nextBookmarked
               ? "Saved to your Monad Watchlist!"
-              : "Removed from Watchlist"
+              : "Removed from Watchlist",
           );
           return {
             ...item,
@@ -111,7 +113,7 @@ export function SocialFeed() {
           };
         }
         return item;
-      })
+      }),
     );
   };
 
@@ -133,7 +135,8 @@ export function SocialFeed() {
   const filteredItems = items.filter((item) => {
     if (activeFilter === "ALL") return true;
     if (activeFilter === "VERIFIED") return item.txHash && item.txHash !== "0x";
-    if (activeFilter === "DEPLOYMENTS") return item.checkpointType === "DEPLOYMENT";
+    if (activeFilter === "DEPLOYMENTS")
+      return item.checkpointType === "DEPLOYMENT";
     if (activeFilter === "COMMITS") return item.checkpointType === "GIT_COMMIT";
     return true;
   });
@@ -153,7 +156,9 @@ export function SocialFeed() {
               type="button"
               onClick={() => {
                 setActiveFilter(tab.id);
-                toast.info(`Filtered feed by: ${tab.label.replace(/`|\(|\)/g, "")}`);
+                toast.info(
+                  `Filtered feed by: ${tab.label.replace(/`|\(|\)/g, "")}`,
+                );
               }}
               className={`cursor-pointer px-3 py-1.5 rounded-lg text-[13px] font-mono transition-all shrink-0 border ${
                 activeFilter === tab.id
@@ -176,13 +181,18 @@ export function SocialFeed() {
         <div className="flex justify-center py-16">
           <div className="flex flex-col items-center gap-3">
             <div className="h-8 w-8 rounded-full border-2 border-coral-pulse border-t-transparent animate-spin" />
-            <span className="text-[13px] font-mono text-ash">Loading Monad Testnet feed...</span>
+            <span className="text-[13px] font-mono text-ash">
+              Loading Monad Testnet feed...
+            </span>
           </div>
         </div>
       ) : (
         <div className="space-y-4">
           {filteredItems.map((item) => (
-            <Card key={item.id} className="bg-ink border border-border shadow-key hover:border-smoke transition-all duration-200">
+            <Card
+              key={item.id}
+              className="bg-ink border border-border shadow-key hover:border-smoke transition-all duration-200"
+            >
               <CardContent className="p-6 space-y-4 font-mono">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border">
                   <div className="flex items-center gap-3">
@@ -200,7 +210,9 @@ export function SocialFeed() {
                       <div className="flex items-center gap-2 text-[12px] text-ash">
                         <span>Signer: @{item.creatorAddress}</span>
                         <span>•</span>
-                        <span>{new Date(item.timestamp).toLocaleTimeString()}</span>
+                        <span>
+                          {new Date(item.timestamp).toLocaleTimeString()}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -235,7 +247,8 @@ export function SocialFeed() {
                   <div className="flex items-center gap-2 overflow-hidden">
                     <Terminal className="h-4 w-4 text-coral-pulse shrink-0" />
                     <span className="truncate text-pure-white">
-                      Digest: `{item.checkpointHash.slice(0, 14)}...{item.checkpointHash.slice(-10)}`
+                      Digest: `{item.checkpointHash.slice(0, 14)}...
+                      {item.checkpointHash.slice(-10)}`
                     </span>
                   </div>
                   <button
@@ -258,7 +271,9 @@ export function SocialFeed() {
                           : "bg-obsidian border-border text-ash hover:text-pure-white hover:border-smoke"
                       }`}
                     >
-                      <Heart className={`h-4 w-4 ${item.isLiked ? "fill-coral-pulse" : ""}`} />
+                      <Heart
+                        className={`h-4 w-4 ${item.isLiked ? "fill-coral-pulse" : ""}`}
+                      />
                       <span>{item.likes} Endorsements</span>
                     </button>
 
@@ -282,7 +297,9 @@ export function SocialFeed() {
                     }`}
                     title="Save to Watchlist"
                   >
-                    <Bookmark className={`h-4 w-4 ${item.isBookmarked ? "fill-electric-sky" : ""}`} />
+                    <Bookmark
+                      className={`h-4 w-4 ${item.isBookmarked ? "fill-electric-sky" : ""}`}
+                    />
                   </button>
                 </div>
               </CardContent>
@@ -292,7 +309,9 @@ export function SocialFeed() {
           {filteredItems.length === 0 && (
             <div className="text-center py-16 text-ash text-[14px] font-mono">
               <p>No checkpoints found</p>
-              <p className="text-[12px] mt-2">Create a checkpoint to see it appear in the feed.</p>
+              <p className="text-[12px] mt-2">
+                Create a checkpoint to see it appear in the feed.
+              </p>
             </div>
           )}
         </div>

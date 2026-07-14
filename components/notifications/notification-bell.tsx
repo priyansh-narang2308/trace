@@ -1,8 +1,19 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { Bell, CheckCircle2, ShieldCheck, Users, Zap, X, ArrowRight, Check, Loader2 } from "lucide-react";
+import {
+  Bell,
+  CheckCircle2,
+  ShieldCheck,
+  Users,
+  Zap,
+  X,
+  ArrowRight,
+  Check,
+  Loader2,
+} from "lucide-react";
 import { useAccount } from "wagmi";
 
 interface NotificationItem {
@@ -25,7 +36,9 @@ export function NotificationBell() {
     if (!isConnected || !address) return;
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/projects?ownerAddress=${encodeURIComponent(address)}`);
+      const res = await fetch(
+        `/api/projects?ownerAddress=${encodeURIComponent(address)}`,
+      );
       if (res.ok) {
         const data = await res.json();
         const projects = data.projects || [];
@@ -61,7 +74,8 @@ export function NotificationBell() {
           notes.push({
             id: "note-welcome",
             title: "Welcome to TRACE",
-            message: "Create your first project and anchor a checkpoint to get started.",
+            message:
+              "Create your first project and anchor a checkpoint to get started.",
             timestamp: "Now",
             type: "FINALITY",
             read: false,
@@ -90,7 +104,7 @@ export function NotificationBell() {
 
   const markRead = (id: string) => {
     setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
     );
   };
 
@@ -156,7 +170,9 @@ export function NotificationBell() {
                   key={note.id}
                   onClick={() => markRead(note.id)}
                   className={`cursor-pointer p-3.5 transition-colors flex items-start gap-3 ${
-                    !note.read ? "bg-obsidian/80 hover:bg-obsidian" : "hover:bg-obsidian/40"
+                    !note.read
+                      ? "bg-obsidian/80 hover:bg-obsidian"
+                      : "hover:bg-obsidian/40"
                   }`}
                 >
                   <div className="mt-0.5 h-7 w-7 rounded-full bg-graphite border border-border flex items-center justify-center shrink-0">
@@ -173,7 +189,9 @@ export function NotificationBell() {
                       <span className="text-[13px] font-sans font-medium text-pure-white truncate">
                         {note.title}
                       </span>
-                      <span className="text-[10px] text-ash shrink-0">{note.timestamp}</span>
+                      <span className="text-[10px] text-ash shrink-0">
+                        {note.timestamp}
+                      </span>
                     </div>
                     <p className="text-[12px] text-ash leading-[1.5] font-sans break-words">
                       {note.message}

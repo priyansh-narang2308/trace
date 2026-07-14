@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/purity */
 "use client";
 
 import { useState, useCallback } from "react";
@@ -56,12 +57,14 @@ export function ProjectComparison({
       setIsSearching(true);
       try {
         const res = await fetch(
-          `/api/search?q=${encodeURIComponent(query)}&filter=PROJECTS`
+          `/api/search?q=${encodeURIComponent(query)}&filter=PROJECTS`,
         );
         if (res.ok) {
           const data = await res.json();
           const mapped = (data.projects || [])
-            .filter((p: { projectId: string }) => p.projectId !== currentProjectId)
+            .filter(
+              (p: { projectId: string }) => p.projectId !== currentProjectId,
+            )
             .map(
               (p: {
                 projectId: string;
@@ -83,7 +86,7 @@ export function ProjectComparison({
                 checkpointCount: p._count?.checkpoints || 0,
                 collaboratorCount: p._count?.collaborators || 0,
                 verifiedAnchors: Math.floor((p._count?.checkpoints || 0) * 0.8),
-              })
+              }),
             );
           setSearchResults(mapped);
         }
@@ -93,7 +96,7 @@ export function ProjectComparison({
         setIsSearching(false);
       }
     },
-    [currentProjectId]
+    [currentProjectId],
   );
 
   const selectProject = (project: ComparisonProject) => {

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -13,10 +14,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { WalletConnect } from "@/components/wallet-connect";
-import {
-  extractP256Coordinates,
-  parseDERSignature,
-} from "@/lib/monad-p256";
+import { extractP256Coordinates, parseDERSignature } from "@/lib/monad-p256";
 
 interface PasskeyAuthProps {
   onAuthenticated?: () => void;
@@ -106,13 +104,15 @@ export function PasskeyAuth({ onAuthenticated }: PasskeyAuthProps) {
 
       const rawIdBytes = new Uint8Array(credential.rawId);
       const rawId = btoa(String.fromCharCode(...rawIdBytes))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/, "");
       const response = credential.response as AuthenticatorAttestationResponse;
       const publicKeyBytes = response.getPublicKey();
       if (!publicKeyBytes) {
-        throw new Error("Could not extract public key from WebAuthn credential");
+        throw new Error(
+          "Could not extract public key from WebAuthn credential",
+        );
       }
       const { x, y } = extractP256Coordinates(publicKeyBytes);
 
@@ -182,14 +182,23 @@ export function PasskeyAuth({ onAuthenticated }: PasskeyAuthProps) {
       const authData = new Uint8Array(response.authenticatorData);
       const clientDataJSON = new Uint8Array(response.clientDataJSON);
 
-      const clientDataHash = await crypto.subtle.digest("SHA-256", clientDataJSON);
-      const signedData = new Uint8Array(authData.length + clientDataHash.byteLength);
+      const clientDataHash = await crypto.subtle.digest(
+        "SHA-256",
+        clientDataJSON,
+      );
+      const signedData = new Uint8Array(
+        authData.length + clientDataHash.byteLength,
+      );
       signedData.set(authData);
       signedData.set(new Uint8Array(clientDataHash), authData.length);
 
-      const messageHashBytes = await crypto.subtle.digest("SHA-256", signedData);
+      const messageHashBytes = await crypto.subtle.digest(
+        "SHA-256",
+        signedData,
+      );
       const messageHash =
-        "0x" + Array.from(new Uint8Array(messageHashBytes))
+        "0x" +
+        Array.from(new Uint8Array(messageHashBytes))
           .map((b) => b.toString(16).padStart(2, "0"))
           .join("");
 
