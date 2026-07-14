@@ -32,6 +32,21 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   ArrowLeft,
   Globe,
   Lock,
@@ -52,6 +67,7 @@ import {
   Layers,
   GitCompare,
   Terminal,
+  MoreHorizontal,
 } from "lucide-react";
 
 interface Checkpoint {
@@ -228,9 +244,9 @@ export default function ProjectDetailPage({
               variant="outline"
               size="sm"
               onClick={() => setShowPasskeyPanel(!showPasskeyPanel)}
-              className="cursor-pointer bg-obsidian hover:bg-graphite text-mist border-border text-[12px] h-9 gap-2"
+              className="cursor-pointer bg-coral-pulse hover:bg-coral-pulse/90 text-white border-transparent text-[12px] font-semibold h-9 px-4 gap-2 rounded-lg shadow-md transition-all"
             >
-              <Fingerprint className="h-3.5 w-3.5 text-coral-pulse" />
+              <Fingerprint className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Biometric Key</span>
             </Button>
             <NotificationBell />
@@ -255,6 +271,53 @@ export default function ProjectDetailPage({
             />
           </div>
         )}
+
+        <AlertDialog
+          open={showDeleteConfirm}
+          onOpenChange={setShowDeleteConfirm}
+        >
+          <AlertDialogContent className="bg-ink border border-border text-pure-white shadow-2xl rounded-2xl max-w-md p-6 animate-in fade-in-0 zoom-in-95">
+            <AlertDialogHeader className="space-y-3 sm:text-left text-left">
+              <div className="h-10 w-10 rounded-xl bg-coral-pulse/15 border border-coral-pulse/30 flex items-center justify-center text-coral-pulse">
+                <AlertTriangle className="h-5 w-5" />
+              </div>
+              <div>
+                <AlertDialogTitle className="text-[18px] font-semibold text-pure-white font-sans">
+                  Delete Enclave Project?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-[14px] text-ash mt-1.5 leading-relaxed">
+                  This action cannot be undone. This will permanently remove{" "}
+                  <span className="text-pure-white font-mono font-medium bg-graphite/80 px-1.5 py-0.5 rounded border border-border/60">
+                    {project.name}
+                  </span>{" "}
+                  and all of its cryptographic checkpoint records from the
+                  verification matrix.
+                </AlertDialogDescription>
+              </div>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="mt-6 flex flex-col sm:flex-row gap-2.5 border-t border-border/60 pt-4 bg-transparent -mx-6 -mb-6 px-6 pb-6">
+              <AlertDialogCancel
+                disabled={isDeleting}
+                className="cursor-pointer bg-graphite hover:bg-slate text-pure-white border-border h-9 px-4 text-[13px] font-medium rounded-xl transition-colors"
+              >
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDeleteProject();
+                }}
+                disabled={isDeleting}
+                className="cursor-pointer bg-coral-pulse hover:bg-coral-pulse/80 text-pure-white h-9 px-4 text-[13px] font-medium rounded-xl shadow-sm flex items-center justify-center gap-2 transition-colors"
+              >
+                {isDeleting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : null}
+                <span>Yes, Delete Project</span>
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 p-6 rounded-[16px] bg-ink border border-border shadow-key">
           <div className="space-y-3 flex-1">
@@ -304,66 +367,90 @@ export default function ProjectDetailPage({
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+          <div className="flex items-center gap-2.5 shrink-0 flex-wrap w-full sm:w-auto justify-end">
             <ProjectFollowButton projectId={project.projectId} />
 
-            <Button
-              onClick={() => setShowCloneModal(true)}
-              className="cursor-pointer bg-graphite hover:bg-slate text-pure-white border border-border text-[13px] h-9 gap-2 shadow-sm"
-            >
-              <GitFork className="h-3.5 w-3.5 text-coral-pulse" />
-              <span>Fork Project</span>
-            </Button>
+            <Popover>
+              <PopoverTrigger
+                className="cursor-pointer bg-graphite hover:bg-slate text-pure-white border border-border h-9 w-9 rounded-xl shadow-sm flex items-center justify-center transition-all hover:border-border/80 hover:shadow-md shrink-0 outline-none"
+                title="More Enclave Actions"
+              >
+                <MoreHorizontal className="h-4 w-4 text-mist" />
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                sideOffset={8}
+                className="w-64 bg-obsidian/95 backdrop-blur-xl border border-border/80 p-2 rounded-xl shadow-2xl space-y-1 z-50 text-pure-white animate-in fade-in-0 zoom-in-95"
+              >
+                <div className="px-2.5 py-1.5 border-b border-border/50 mb-1">
+                  <p className="text-[11px] font-mono text-mist uppercase tracking-wider font-semibold">
+                    Enclave Actions
+                  </p>
+                </div>
 
-            {isOwner && (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsEditing(!isEditing)}
-                  className="cursor-pointer bg-obsidian hover:bg-graphite text-mist border-border text-[13px] h-9 gap-2"
+                <button
+                  onClick={() => setShowCloneModal(true)}
+                  className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg hover:bg-graphite text-left transition-all group cursor-pointer"
                 >
-                  <Edit2 className="h-3.5 w-3.5" />
-                  <span>{isEditing ? "Cancel Edit" : "Edit Metadata"}</span>
-                </Button>
-
-                {!showDeleteConfirm ? (
-                  <Button
-                    size="sm"
-                    onClick={() => setShowDeleteConfirm(true)}
-                    className="cursor-pointer bg-ember-hush hover:bg-coral-pulse text-pure-white border border-coral-pulse/40 text-[13px] h-9 gap-2"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    <span>Delete</span>
-                  </Button>
-                ) : (
-                  <div className="flex items-center gap-2 p-1 rounded-lg bg-graphite border border-coral-pulse/40">
-                    <span className="text-[12px] font-mono text-coral-pulse px-2">
-                      Confirm?
-                    </span>
-                    <Button
-                      size="sm"
-                      onClick={handleDeleteProject}
-                      disabled={isDeleting}
-                      className="cursor-pointer bg-coral-pulse hover:bg-coral-pulse/80 text-pure-white h-8 px-3 text-[12px]"
-                    >
-                      {isDeleting && (
-                        <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                      )}
-                      Yes
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowDeleteConfirm(false)}
-                      className="cursor-pointer h-8 text-[12px] text-ash hover:text-pure-white"
-                    >
-                      No
-                    </Button>
+                  <div className="h-8 w-8 rounded-lg bg-graphite/80 group-hover:bg-graphite flex items-center justify-center border border-border/50 group-hover:border-coral-pulse/50 transition-colors shrink-0">
+                    <GitFork className="h-4 w-4 text-coral-pulse" />
                   </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-medium text-pure-white group-hover:text-coral-pulse transition-colors">
+                      Fork Project
+                    </p>
+                    <p className="text-[11px] text-ash truncate">
+                      Create a clone on your account
+                    </p>
+                  </div>
+                </button>
+
+                {isOwner && (
+                  <>
+                    <div className="h-px bg-border/50 my-1" />
+                    <div className="px-2.5 py-1">
+                      <p className="text-[10px] font-mono text-ash uppercase tracking-wider font-semibold">
+                        Owner Controls
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => setIsEditing(!isEditing)}
+                      className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg hover:bg-graphite text-left transition-all group cursor-pointer"
+                    >
+                      <div className="h-8 w-8 rounded-lg bg-graphite/80 group-hover:bg-graphite flex items-center justify-center border border-border/50 group-hover:border-electric-sky/50 transition-colors shrink-0">
+                        <Edit2 className="h-4 w-4 text-mist group-hover:text-electric-sky transition-colors" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[13px] font-medium text-pure-white group-hover:text-electric-sky transition-colors">
+                          {isEditing ? "Cancel Edit" : "Edit Metadata"}
+                        </p>
+                        <p className="text-[11px] text-ash truncate">
+                          Update title & description
+                        </p>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg hover:bg-coral-pulse/10 text-left transition-all group cursor-pointer"
+                    >
+                      <div className="h-8 w-8 rounded-lg bg-graphite/80 group-hover:bg-coral-pulse/20 flex items-center justify-center border border-border/50 group-hover:border-coral-pulse/50 transition-colors shrink-0">
+                        <Trash2 className="h-4 w-4 text-ash group-hover:text-coral-pulse transition-colors" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[13px] font-medium text-pure-white group-hover:text-coral-pulse transition-colors">
+                          Delete Project
+                        </p>
+                        <p className="text-[11px] text-ash truncate">
+                          Remove enclave forever
+                        </p>
+                      </div>
+                    </button>
+                  </>
                 )}
-              </>
-            )}
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
