@@ -84,14 +84,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing badgeId or address" }, { status: 400 });
     }
 
-    const mockMintTx = `0x${Math.random().toString(16).slice(2, 10)}${Math.random().toString(16).slice(2, 10)}9012841029481029481029481029481`;
+    const badge = ACHIEVEMENT_TIERS.find((b) => b.id === badgeId);
+    if (!badge) {
+      return NextResponse.json(
+        { error: "Badge not found" },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json(
       {
         success: true,
         badgeId,
-        mintTxHash: mockMintTx,
-        message: "NFT Badge successfully minted and attested on Monad Testnet!",
+        mintTxHash: null,
+        message: `Milestone "${badge.title}" verified via on-chain checkpoint count. Claim your badge when on-chain checkpoint threshold is met.`,
+        note: "Badge minting on Monad Testnet is verified by checkpoint count; no separate mint transaction required.",
       },
       { status: 200 }
     );

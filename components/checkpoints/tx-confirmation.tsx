@@ -10,6 +10,7 @@ interface TxConfirmationProps {
 const STATUS_CONFIG: Record<TxStatus, { label: string; sublabel: string; color: string }> = {
   IDLE: { label: "Awaiting Action", sublabel: "Submit a checkpoint to begin", color: "#9c9c9d" },
   PREPARING: { label: "Preparing Transaction", sublabel: "Encoding checkpoint data for Monad Testnet...", color: "#63a1ff" },
+  INIT_PROJECT: { label: "Initializing Project On-Chain", sublabel: "Creating project on Monad Testnet before checkpoint...", color: "#ff6363" },
   SIGNING: { label: "Awaiting Signature", sublabel: "Confirm the transaction in your wallet...", color: "#ff6363" },
   PENDING: { label: "Transaction Pending", sublabel: "Waiting for Monad 1-second finality...", color: "#63a1ff" },
   CONFIRMED: { label: "Checkpoint Anchored", sublabel: "Successfully finalized on Monad Testnet", color: "#59d499" },

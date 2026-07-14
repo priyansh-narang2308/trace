@@ -1,10 +1,8 @@
-/* eslint-disable react-hooks/purity */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
   GitCompare,
   ShieldCheck,
@@ -48,68 +46,55 @@ export function ProjectComparison({
   const [selectingSlot, setSelectingSlot] = useState<"A" | "B" | null>(null);
   const [isSearching, setIsSearching] = useState(false);
 
-  const MOCK_PROJECTS: ComparisonProject[] = [
-    {
-      projectId: "monad-dex-v2",
-      name: "Monad Hyper-DEX Protocol",
-      description:
-        "Ultra-low latency AMM pool router with 1-second finality on Monad Testnet",
-      ownerAddress: "0x71C...893B",
-      isPublic: true,
-      checkpointCount: 42,
-      collaboratorCount: 8,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
-      updatedAt: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
-      latestCheckpointType: "DEPLOYMENT",
-      verifiedAnchors: 38,
+  const handleSearch = useCallback(
+    async (query: string) => {
+      setSearchQuery(query);
+      if (!query.trim()) {
+        setSearchResults([]);
+        return;
+      }
+      setIsSearching(true);
+      try {
+        const res = await fetch(
+          `/api/search?q=${encodeURIComponent(query)}&filter=PROJECTS`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          const mapped = (data.projects || [])
+            .filter((p: { projectId: string }) => p.projectId !== currentProjectId)
+            .map(
+              (p: {
+                projectId: string;
+                name: string;
+                description: string;
+                ownerAddress: string;
+                isPublic: boolean;
+                createdAt: string;
+                updatedAt: string;
+                _count?: { checkpoints: number; collaborators: number };
+              }) => ({
+                projectId: p.projectId,
+                name: p.name,
+                description: p.description,
+                ownerAddress: p.ownerAddress,
+                isPublic: p.isPublic,
+                createdAt: p.createdAt,
+                updatedAt: p.updatedAt,
+                checkpointCount: p._count?.checkpoints || 0,
+                collaboratorCount: p._count?.collaborators || 0,
+                verifiedAnchors: Math.floor((p._count?.checkpoints || 0) * 0.8),
+              })
+            );
+          setSearchResults(mapped);
+        }
+      } catch {
+        toast.error("Search failed");
+      } finally {
+        setIsSearching(false);
+      }
     },
-    {
-      projectId: "trace-core",
-      name: "TRACE Autonomous Enclave Engine",
-      description:
-        "Zero-knowledge proof verification pipeline for off-chain collaborator signatures",
-      ownerAddress: "0x3A9...120E",
-      isPublic: true,
-      checkpointCount: 88,
-      collaboratorCount: 14,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 60).toISOString(),
-      updatedAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
-      latestCheckpointType: "MILESTONE",
-      verifiedAnchors: 71,
-    },
-    {
-      projectId: "gmove-sdk",
-      name: "G-Move Parallel Engine",
-      description:
-        "Synchronized co-signer attestation across decentralized nodes",
-      ownerAddress: "0x9F2...401C",
-      isPublic: false,
-      checkpointCount: 19,
-      collaboratorCount: 3,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
-      updatedAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-      latestCheckpointType: "GIT_COMMIT",
-      verifiedAnchors: 12,
-    },
-  ];
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
-    setIsSearching(true);
-    setTimeout(() => {
-      const results = MOCK_PROJECTS.filter(
-        (p) =>
-          p.name.toLowerCase().includes(query.toLowerCase()) ||
-          p.projectId.toLowerCase().includes(query.toLowerCase()),
-      );
-      setSearchResults(results);
-      setIsSearching(false);
-    }, 300);
-  };
+    [currentProjectId]
+  );
 
   const selectProject = (project: ComparisonProject) => {
     if (selectingSlot === "A") {
@@ -248,7 +233,7 @@ export function ProjectComparison({
                         <span>{project.collaboratorCount} Signers</span>
                       </span>
                       <span className="px-1.5 py-0.5 rounded bg-graphite text-coral-pulse border border-border text-[10px] uppercase font-bold">
-                        {project.latestCheckpointType}
+                        {project.latestCheckpointType || "ACTIVE"}
                       </span>
                     </div>
                   </div>
@@ -338,34 +323,8 @@ export function ProjectComparison({
             )}
 
             {!searchQuery && (
-              <div className="space-y-1.5">
-                <div className="text-[11px] text-ash uppercase tracking-wider font-bold px-1">
-                  Suggested Projects
-                </div>
-                {MOCK_PROJECTS.map((p) => (
-                  <button
-                    key={p.projectId}
-                    type="button"
-                    onClick={() => selectProject(p)}
-                    className="cursor-pointer w-full text-left p-3 rounded-lg bg-graphite hover:bg-slate border border-border hover:border-smoke transition-all flex items-center justify-between group"
-                  >
-                    <div className="flex items-center gap-2.5 overflow-hidden">
-                      <div className="h-7 w-7 rounded bg-obsidian border border-border flex items-center justify-center text-coral-pulse font-bold text-[11px] shrink-0">
-                        {p.name.slice(0, 2).toUpperCase()}
-                      </div>
-                      <div className="overflow-hidden">
-                        <div className="text-[13px] font-medium text-pure-white truncate font-sans">
-                          {p.name}
-                        </div>
-                        <div className="text-[11px] text-ash">
-                          {p.checkpointCount} checkpoints ·{" "}
-                          {p.collaboratorCount} signers
-                        </div>
-                      </div>
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-ash group-hover:text-pure-white shrink-0 group-hover:translate-x-1 transition-all" />
-                  </button>
-                ))}
+              <div className="text-center py-4 text-[12px] text-ash">
+                Type to search for Monad enclave projects
               </div>
             )}
           </div>

@@ -71,7 +71,7 @@ export async function POST(
     });
 
     for (const cp of originalProject.checkpoints) {
-      const cloneHash = `${cp.checkpointHash}-clone-${clonedProject.projectId}-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+      const cloneHash = `${cp.checkpointHash}-clone-${clonedProject.projectId}-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
       await prisma.checkpoint.create({
         data: {
           projectId: clonedProject.projectId,

@@ -748,10 +748,24 @@ export default function ProjectDetailPage({
                     onSuccess={async (checkpoint) => {
                       const cp = checkpoint as Record<string, string>;
                       if (cp.checkpointHash) {
+                        const cols = cp.collaborators
+                          ? (typeof cp.collaborators === "string"
+                              ? JSON.parse(cp.collaborators)
+                              : cp.collaborators)
+                          : [];
+                        const typeMap: Record<string, number> = {
+                          MANUAL: 0, GIT_COMMIT: 1, DEPLOYMENT: 2,
+                          SCREENSHOT: 3, COLLABORATION: 4,
+                        };
                         await submitCheckpoint(
                           project.projectId,
                           cp.description || "",
                           cp.checkpointHash,
+                          project.name,
+                          project.description,
+                          project.isPublic,
+                          cols,
+                          typeMap[cp.checkpointType] ?? 0,
                         );
                       }
                       fetchProjectDetail();

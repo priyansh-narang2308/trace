@@ -1,9 +1,9 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { Bell, CheckCircle2, ShieldCheck, Users, Zap, X, ArrowRight, Check } from "lucide-react";
+import { Bell, CheckCircle2, ShieldCheck, Users, Zap, X, ArrowRight, Check, Loader2 } from "lucide-react";
+import { useAccount } from "wagmi";
 
 interface NotificationItem {
   id: string;
@@ -16,39 +16,71 @@ interface NotificationItem {
 }
 
 export function NotificationBell() {
+  const { address, isConnected } = useAccount();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchNotifications = useCallback(async () => {
+    if (!isConnected || !address) return;
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/projects?ownerAddress=${encodeURIComponent(address)}`);
+      if (res.ok) {
+        const data = await res.json();
+        const projects = data.projects || [];
+        const notes: NotificationItem[] = [];
+
+        for (const project of projects.slice(0, 3)) {
+          const cpCount = project._count?.checkpoints || 0;
+          const collabCount = project._count?.collaborators || 0;
+          if (cpCount > 0) {
+            notes.push({
+              id: `note-cp-${project.id}`,
+              title: "Checkpoints Anchored",
+              message: `${project.name} has ${cpCount} checkpoint${cpCount > 1 ? "s" : ""} anchored to the ledger.`,
+              timestamp: "Recent",
+              type: "CHECKPOINT",
+              read: false,
+              link: `/projects/${project.projectId}`,
+            });
+          }
+          if (collabCount > 0) {
+            notes.push({
+              id: `note-collab-${project.id}`,
+              title: "Team Collaborators",
+              message: `${project.name} has ${collabCount} collaborator${collabCount > 1 ? "s" : ""} in its enclave.`,
+              timestamp: "Recent",
+              type: "COLLABORATION",
+              read: false,
+            });
+          }
+        }
+
+        if (notes.length === 0) {
+          notes.push({
+            id: "note-welcome",
+            title: "Welcome to TRACE",
+            message: "Create your first project and anchor a checkpoint to get started.",
+            timestamp: "Now",
+            type: "FINALITY",
+            read: false,
+            link: "/projects",
+          });
+        }
+
+        setNotifications(notes);
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setIsLoading(false);
+    }
+  }, [address, isConnected]);
 
   useEffect(() => {
-    const mockNotes: NotificationItem[] = [
-      {
-        id: "note-1",
-        title: "Sub-Second Finality Anchor",
-        message: "Checkpoint 0xa8f19... verified on Monad Testnet block #1049281 with 21,000 gas.",
-        timestamp: "Just now",
-        type: "FINALITY",
-        read: false,
-        link: "/projects",
-      },
-      {
-        id: "note-2",
-        title: "New Co-Signer Invited",
-        message: "Collaborator @0x71...88ab joined your Cryptographic Enclave matrix.",
-        timestamp: "5m ago",
-        type: "COLLABORATION",
-        read: false,
-      },
-      {
-        id: "note-3",
-        title: "Micro-Checkpoint Staged",
-        message: "Commit 'Optimized 1-second finality flow' anchored to immutable ledger.",
-        timestamp: "12m ago",
-        type: "CHECKPOINT",
-        read: true,
-      },
-    ];
-    setNotifications(mockNotes);
-  }, []);
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -109,7 +141,12 @@ export function NotificationBell() {
           </div>
 
           <div className="max-h-[380px] overflow-y-auto divide-y divide-border/60">
-            {notifications.length === 0 ? (
+            {isLoading ? (
+              <div className="py-12 text-center text-ash text-[12px] flex items-center justify-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Loading notifications...</span>
+              </div>
+            ) : notifications.length === 0 ? (
               <div className="py-12 text-center text-ash text-[12px] space-y-1">
                 <div>No telemetry notifications recorded.</div>
               </div>

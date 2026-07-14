@@ -21,6 +21,7 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Zap,
+  Loader2,
 } from "lucide-react";
 
 interface AnalyticsData {
@@ -45,55 +46,49 @@ interface AnalyticsData {
   weeklyTrend: number[];
 }
 
-const MOCK_ANALYTICS: AnalyticsData = {
-  totalProjects: 12,
-  totalCheckpoints: 347,
-  totalCollaborators: 41,
-  verifiedAnchors: 289,
-  verificationRate: 83.3,
-  avgCheckpointsPerProject: 28.9,
-  recentActivity: [
-    {
-      id: "act-1",
-      type: "DEPLOYMENT",
-      description: "Deployed AMM router contract on Monad Testnet",
-      timestamp: new Date(Date.now() - 1000 * 60 * 8).toISOString(),
-      projectName: "Monad Hyper-DEX",
-    },
-    {
-      id: "act-2",
-      type: "MILESTONE",
-      description: "Achieved 100k TPS stress test validation",
-      timestamp: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
-      projectName: "TRACE Core Engine",
-    },
-    {
-      id: "act-3",
-      type: "GIT_COMMIT",
-      description: "Optimized P-256 precompile gas by 64%",
-      timestamp: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
-      projectName: "G-Move Parallel",
-    },
-    {
-      id: "act-4",
-      type: "REVIEW",
-      description: "Security audit for multi-sig treasury lockbox",
-      timestamp: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
-      projectName: "Monad NFT Studio",
-    },
-  ],
-  checkpointsByType: [
-    { type: "MILESTONE", count: 142, color: "bg-coral-pulse" },
-    { type: "GIT_COMMIT", count: 98, color: "bg-electric-sky" },
-    { type: "DEPLOYMENT", count: 67, color: "bg-emerald-verify" },
-    { type: "REVIEW", count: 40, color: "bg-purple-400" },
-  ],
-  weeklyTrend: [12, 18, 15, 28, 22, 35, 31],
-};
-
 export function AnalyticsDashboard() {
-  const [data, setData] = useState<AnalyticsData>(MOCK_ANALYTICS);
+  const [data, setData] = useState<AnalyticsData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedTimeframe, setSelectedTimeframe] = useState("7D");
+
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      setIsLoading(true);
+      try {
+        const res = await fetch("/api/analytics");
+        if (res.ok) {
+          const result = await res.json();
+          setData(result);
+        }
+      } catch {
+        toast.error("Failed to load analytics data");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchAnalytics();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-20">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-coral-pulse" />
+          <span className="text-[13px] font-mono text-ash">
+            Loading Monad enclave metrics...
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="text-center py-20 text-ash font-mono text-[14px]">
+        Failed to load analytics data.
+      </div>
+    );
+  }
 
   const statCards = [
     {
@@ -101,7 +96,7 @@ export function AnalyticsDashboard() {
       value: data.totalProjects,
       icon: Layers,
       iconColor: "text-coral-pulse",
-      change: "+3",
+      change: `+${data.totalProjects}`,
       changeUp: true,
     },
     {
@@ -109,7 +104,7 @@ export function AnalyticsDashboard() {
       value: data.totalCheckpoints,
       icon: GitCommit,
       iconColor: "text-electric-sky",
-      change: "+42",
+      change: `+${data.totalCheckpoints}`,
       changeUp: true,
     },
     {
@@ -118,14 +113,14 @@ export function AnalyticsDashboard() {
       icon: ShieldCheck,
       iconColor: "text-emerald-verify",
       change: `${data.verificationRate.toFixed(1)}%`,
-      changeUp: true,
+      changeUp: data.verificationRate > 50,
     },
     {
       label: "Team Signers",
       value: data.totalCollaborators,
       icon: Users,
       iconColor: "text-purple-400",
-      change: "+7",
+      change: `+${data.totalCollaborators}`,
       changeUp: true,
     },
   ];
@@ -251,6 +246,11 @@ export function AnalyticsDashboard() {
                 </div>
               </div>
             ))}
+            {data.checkpointsByType.length === 0 && (
+              <div className="text-center py-6 text-ash text-[12px]">
+                No checkpoints created yet
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -263,46 +263,52 @@ export function AnalyticsDashboard() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-5 font-mono">
-          <div className="space-y-3">
-            {data.recentActivity.map((act) => (
-              <div
-                key={act.id}
-                className="flex items-center justify-between p-3 rounded-xl bg-obsidian border border-border hover:border-smoke transition-colors"
-              >
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <div className="h-8 w-8 rounded-lg bg-graphite border border-border flex items-center justify-center shrink-0">
-                    {act.type === "DEPLOYMENT" && (
-                      <Zap className="h-4 w-4 text-emerald-verify" />
-                    )}
-                    {act.type === "MILESTONE" && (
-                      <Sparkles className="h-4 w-4 text-coral-pulse" />
-                    )}
-                    {act.type === "GIT_COMMIT" && (
-                      <GitCommit className="h-4 w-4 text-electric-sky" />
-                    )}
-                    {act.type === "REVIEW" && (
-                      <ShieldCheck className="h-4 w-4 text-purple-400" />
-                    )}
-                  </div>
-                  <div className="overflow-hidden">
-                    <div className="text-[13px] text-pure-white truncate font-sans font-medium">
-                      {act.description}
+          {data.recentActivity.length > 0 ? (
+            <div className="space-y-3">
+              {data.recentActivity.slice(0, 8).map((act) => (
+                <div
+                  key={act.id}
+                  className="flex items-center justify-between p-3 rounded-xl bg-obsidian border border-border hover:border-smoke transition-colors"
+                >
+                  <div className="flex items-center gap-3 overflow-hidden">
+                    <div className="h-8 w-8 rounded-lg bg-graphite border border-border flex items-center justify-center shrink-0">
+                      {act.type === "DEPLOYMENT" && (
+                        <Zap className="h-4 w-4 text-emerald-verify" />
+                      )}
+                      {act.type === "MILESTONE" && (
+                        <Sparkles className="h-4 w-4 text-coral-pulse" />
+                      )}
+                      {act.type === "GIT_COMMIT" && (
+                        <GitCommit className="h-4 w-4 text-electric-sky" />
+                      )}
+                      {act.type === "REVIEW" && (
+                        <ShieldCheck className="h-4 w-4 text-purple-400" />
+                      )}
                     </div>
-                    <div className="text-[11px] text-ash flex items-center gap-2">
-                      <span>{act.projectName}</span>
-                      <span>·</span>
-                      <span>
-                        {new Date(act.timestamp).toLocaleTimeString()}
-                      </span>
+                    <div className="overflow-hidden">
+                      <div className="text-[13px] text-pure-white truncate font-sans font-medium">
+                        {act.description}
+                      </div>
+                      <div className="text-[11px] text-ash flex items-center gap-2">
+                        <span>{act.projectName}</span>
+                        <span>·</span>
+                        <span>
+                          {new Date(act.timestamp).toLocaleTimeString()}
+                        </span>
+                      </div>
                     </div>
                   </div>
+                  <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-graphite text-electric-sky border border-border shrink-0">
+                    {act.type}
+                  </span>
                 </div>
-                <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-graphite text-electric-sky border border-border shrink-0">
-                  {act.type}
-                </span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-ash text-[12px]">
+              No recent activity to display
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

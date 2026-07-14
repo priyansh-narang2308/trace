@@ -13,6 +13,10 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { WalletConnect } from "@/components/wallet-connect";
+import {
+  extractP256Coordinates,
+  parseDERSignature,
+} from "@/lib/monad-p256";
 
 interface PasskeyAuthProps {
   onAuthenticated?: () => void;
@@ -52,7 +56,6 @@ export function PasskeyAuth({ onAuthenticated }: PasskeyAuthProps) {
 
   useEffect(() => {
     if (isConnected && address) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       checkPasskeyRegistration();
     }
   }, [isConnected, address, checkPasskeyRegistration]);
@@ -101,17 +104,17 @@ export function PasskeyAuth({ onAuthenticated }: PasskeyAuthProps) {
         throw new Error("Passkey registration was cancelled or failed.");
       }
 
-      const rawId = Buffer.from(credential.rawId).toString("base64url");
-      const mockX =
-        "0x" +
-        Array.from(window.crypto.getRandomValues(new Uint8Array(32)))
-          .map((b) => b.toString(16).padStart(2, "0"))
-          .join("");
-      const mockY =
-        "0x" +
-        Array.from(window.crypto.getRandomValues(new Uint8Array(32)))
-          .map((b) => b.toString(16).padStart(2, "0"))
-          .join("");
+      const rawIdBytes = new Uint8Array(credential.rawId);
+      const rawId = btoa(String.fromCharCode(...rawIdBytes))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+      const response = credential.response as AuthenticatorAttestationResponse;
+      const publicKeyBytes = response.getPublicKey();
+      if (!publicKeyBytes) {
+        throw new Error("Could not extract public key from WebAuthn credential");
+      }
+      const { x, y } = extractP256Coordinates(publicKeyBytes);
 
       const saveRes = await fetch("/api/passkey/register", {
         method: "POST",
@@ -119,8 +122,8 @@ export function PasskeyAuth({ onAuthenticated }: PasskeyAuthProps) {
         body: JSON.stringify({
           address,
           passkeyId: rawId,
-          publicKeyX: mockX,
-          publicKeyY: mockY,
+          publicKeyX: x,
+          publicKeyY: y,
         }),
       });
 
@@ -174,30 +177,32 @@ export function PasskeyAuth({ onAuthenticated }: PasskeyAuthProps) {
         throw new Error("Authentication cancelled or failed.");
       }
 
-      const mockHash =
-        "0x" +
-        Array.from(window.crypto.getRandomValues(new Uint8Array(32)))
+      const response = assertion.response as AuthenticatorAssertionResponse;
+
+      const authData = new Uint8Array(response.authenticatorData);
+      const clientDataJSON = new Uint8Array(response.clientDataJSON);
+
+      const clientDataHash = await crypto.subtle.digest("SHA-256", clientDataJSON);
+      const signedData = new Uint8Array(authData.length + clientDataHash.byteLength);
+      signedData.set(authData);
+      signedData.set(new Uint8Array(clientDataHash), authData.length);
+
+      const messageHashBytes = await crypto.subtle.digest("SHA-256", signedData);
+      const messageHash =
+        "0x" + Array.from(new Uint8Array(messageHashBytes))
           .map((b) => b.toString(16).padStart(2, "0"))
           .join("");
-      const mockR =
-        "0x" +
-        Array.from(window.crypto.getRandomValues(new Uint8Array(32)))
-          .map((b) => b.toString(16).padStart(2, "0"))
-          .join("");
-      const mockS =
-        "0x" +
-        Array.from(window.crypto.getRandomValues(new Uint8Array(32)))
-          .map((b) => b.toString(16).padStart(2, "0"))
-          .join("");
+
+      const sig = parseDERSignature(response.signature);
 
       const verifyRes = await fetch("/api/passkey/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           address,
-          messageHash: mockHash,
-          signatureR: mockR,
-          signatureS: mockS,
+          messageHash,
+          signatureR: sig.r,
+          signatureS: sig.s,
         }),
       });
 

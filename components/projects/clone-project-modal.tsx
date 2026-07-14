@@ -36,7 +36,7 @@ export function CloneProjectModal({
 
   const [formData, setFormData] = useState({
     newName: `Copy of ${originalName}`,
-    newProjectId: `${projectId}-fork-${Math.floor(Math.random() * 9000 + 1000)}`,
+    newProjectId: `${projectId}-fork-${crypto.randomUUID().slice(0, 8)}`,
     copyCollaborators: false,
   });
 
