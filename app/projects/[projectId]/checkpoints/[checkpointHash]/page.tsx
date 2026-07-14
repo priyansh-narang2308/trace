@@ -102,7 +102,7 @@ export default function CheckpointDetailPage({
 
   return (
     <div className="min-h-screen bg-void-black text-pure-white font-sans pb-24">
-      <header className="sticky top-0 z-50 border-b border-border bg-void-black/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-border bg-void-black/80 backdrop-blur-xl animate-slide-down">
         <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href={`/projects/${projectId}`}>

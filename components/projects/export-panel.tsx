@@ -41,7 +41,7 @@ interface ExportPanelProps {
 
 export function ExportPanel({ projectData }: ExportPanelProps) {
   const [isExportingJson, setIsExportingJson] = useState(false);
-  const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const [isExportingReport, setIsExportingReport] = useState(false);
   const [lastExport, setLastExport] = useState<string | null>(null);
 
   const exportToJson = () => {
@@ -97,8 +97,8 @@ export function ExportPanel({ projectData }: ExportPanelProps) {
     }, 600);
   };
 
-  const exportToPdf = () => {
-    setIsExportingPdf(true);
+  const exportToReport = () => {
+    setIsExportingReport(true);
 
     setTimeout(() => {
       const lines = [
@@ -154,8 +154,8 @@ export function ExportPanel({ projectData }: ExportPanelProps) {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      setIsExportingPdf(false);
-      setLastExport("PDF");
+      setIsExportingReport(false);
+      setLastExport("Report");
       toast.success("Attestation report exported successfully!");
     }, 800);
   };
@@ -210,11 +210,11 @@ export function ExportPanel({ projectData }: ExportPanelProps) {
 
           <Button
             type="button"
-            onClick={exportToPdf}
-            disabled={isExportingPdf}
+            onClick={exportToReport}
+            disabled={isExportingReport}
             className="cursor-pointer flex-1 bg-obsidian hover:bg-graphite border border-border text-pure-white font-mono text-[13px] h-11 rounded-xl gap-2 shadow-sm transition-all hover:border-coral-pulse/40 hover:shadow-md"
           >
-            {isExportingPdf ? (
+            {isExportingReport ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <ScrollText className="h-4 w-4 text-coral-pulse" />

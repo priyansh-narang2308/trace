@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
     const file = formData.get("file") as File | null;
     const collaborators = formData.get("collaborators") as string | null;
     const signature = formData.get("signature") as string | null;
+    const signingTimestamp = formData.get("signingTimestamp") as string | null;
 
     if (!projectId || !hash || !description || !checkpointType || !creatorAddress) {
       return NextResponse.json(
@@ -26,8 +27,9 @@ export async function POST(request: NextRequest) {
     // Verify EIP-191 signature if provided
     if (signature) {
       try {
+        const ts = signingTimestamp || String(Date.now());
         const recoveredAddress = await recoverMessageAddress({
-          message: `TRACE Checkpoint Anchor\nProject: ${projectId}\nHash: ${hash}\nTime: ${Date.now()}`,
+          message: `TRACE Checkpoint Anchor\nProject: ${projectId}\nHash: ${hash}\nTime: ${ts}`,
           signature: signature as `0x${string}`,
         });
         if (recoveredAddress.toLowerCase() !== creatorAddress.toLowerCase()) {

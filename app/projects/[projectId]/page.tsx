@@ -220,7 +220,7 @@ export default function ProjectDetailPage({
 
   return (
     <div className="min-h-screen bg-void-black text-pure-white font-sans selection:bg-coral-pulse/30 selection:text-pure-white pb-24">
-      <header className="sticky top-0 z-50 border-b border-border bg-void-black/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-border bg-void-black/80 backdrop-blur-xl animate-slide-down">
         <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/projects">
@@ -793,7 +793,31 @@ export default function ProjectDetailPage({
                   />
                   <MicroCheckpointBar
                     projectId={project.projectId}
-                    onSuccess={() => fetchProjectDetail()}
+                    onSuccess={(checkpoint) => {
+                      const cp = checkpoint as Record<string, string>;
+                      if (cp?.checkpointHash && project) {
+                        const typeMap: Record<string, number> = {
+                          MANUAL: 0, GIT_COMMIT: 1, DEPLOYMENT: 2,
+                          SCREENSHOT: 3, COLLABORATION: 4,
+                        };
+                        const cols = cp.collaborators
+                          ? (typeof cp.collaborators === "string"
+                              ? JSON.parse(cp.collaborators)
+                              : cp.collaborators)
+                          : [];
+                        submitCheckpoint(
+                          project.projectId,
+                          cp.description || "",
+                          cp.checkpointHash,
+                          project.name,
+                          project.description,
+                          project.isPublic,
+                          cols,
+                          typeMap[cp.checkpointType] ?? 0,
+                        );
+                      }
+                      fetchProjectDetail();
+                    }}
                   />
                 </div>
               )}
