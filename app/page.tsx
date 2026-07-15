@@ -13,10 +13,6 @@ import {
   Layers,
   Menu,
   X,
-  Sparkles,
-  Command,
-  Cpu,
-  Zap,
 } from "lucide-react";
 import Lightfall from "@/components/Lightfall";
 
@@ -88,7 +84,9 @@ export default function Home() {
               Monad Docs
             </a>
             <span
-              onClick={() => toast.info("Monad Testnet active on Chain ID 10143")}
+              onClick={() =>
+                toast.info("Monad Testnet active on Chain ID 10143")
+              }
               className="text-[11px] uppercase font-mono px-2 py-0.5 rounded bg-obsidian text-ash border cursor-pointer border-border"
             >
               Chain 10143
@@ -112,7 +110,11 @@ export default function Home() {
               className="h-10 w-10 rounded-xl bg-obsidian border border-border flex items-center justify-center text-pure-white cursor-pointer hover:bg-graphite transition-colors"
               aria-label="Toggle navigation menu"
             >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {mobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
             </button>
           </div>
         </motion.header>
@@ -255,8 +257,6 @@ export default function Home() {
             </p>
           </motion.div>
         </motion.div>
-
-    
       </main>
 
       <div className="w-full relative overflow-hidden bg-void-black pt-20 pb-8 border-t border-border select-none z-10">
