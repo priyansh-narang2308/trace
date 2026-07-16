@@ -24,9 +24,9 @@ export default function RootLayout({
     <html
       suppressHydrationWarning
       lang="en"
-      className={` ${inter.className} h-full antialiased dark`}
+      className={` ${inter.className} h-full antialiased dark overflow-x-hidden w-full max-w-full`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="min-h-full flex flex-col bg-background text-foreground overflow-x-hidden w-full max-w-full">
         <Providers>
           {children}
 

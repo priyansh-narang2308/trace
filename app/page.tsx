@@ -40,8 +40,11 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-void-black text-pure-white font-sans selection:bg-coral-pulse/30 selection:text-white relative overflow-hidden">
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden w-full h-screen style={{ willChange: 'transform' }}">
+    <div className="min-h-screen flex flex-col bg-void-black text-pure-white font-sans selection:bg-coral-pulse/30 selection:text-white relative overflow-x-hidden w-full max-w-full">
+      <div
+        className="fixed inset-0 pointer-events-none z-0 overflow-hidden w-full h-screen"
+        style={{ willChange: "transform" }}
+      >
         <Lightfall
           className="w-full h-full"
           colors={["#FF2A2A", "#FF6363", "#991111"]}
@@ -54,16 +57,16 @@ export default function Home() {
         />
       </div>
 
-      <div className="sticky top-4 z-50 px-4 max-w-5xl mx-auto w-full">
+      <div className="sticky top-4 z-50 px-3 sm:px-4 max-w-5xl mx-auto w-full">
         <motion.header
           initial={{ y: -35, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" as const }}
-          className="flex items-center justify-between px-5 py-3 rounded-full border border-border bg-void-black/80 backdrop-blur-xl shadow-key"
+          className="flex items-center justify-between px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-full border border-border bg-void-black/80 backdrop-blur-xl shadow-key w-full"
         >
-          <Link href="/" className="flex items-center gap-2.5 cursor-pointer">
-            <div className="h-5 w-5 rounded-xs bg-coral-pulse rotate-45 shrink-0 flex items-center justify-center shadow-sm" />
-            <span className="text-sm font-medium tracking-tight text-pure-white font-sans">
+          <Link href="/" className="flex items-center gap-2 sm:gap-2.5 cursor-pointer shrink-0">
+            <div className="h-4.5 w-4.5 sm:h-5 sm:w-5 rounded-xs bg-coral-pulse rotate-45 shrink-0 flex items-center justify-center shadow-sm" />
+            <span className="text-[13px] sm:text-sm font-medium tracking-tight text-pure-white font-sans">
               TRACE
             </span>
           </Link>
@@ -102,18 +105,20 @@ export default function Home() {
             <WalletConnect />
           </div>
 
-          <div className="flex md:hidden items-center gap-2">
-            <WalletConnect />
+          <div className="flex md:hidden items-center gap-1.5 sm:gap-2">
+            <div className="scale-90 sm:scale-100 origin-right">
+              <WalletConnect />
+            </div>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="h-10 w-10 rounded-xl bg-obsidian border border-border flex items-center justify-center text-pure-white cursor-pointer hover:bg-graphite transition-colors"
+              className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-obsidian border border-border flex items-center justify-center text-pure-white cursor-pointer hover:bg-graphite transition-colors shrink-0"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? (
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4 sm:h-5 sm:w-5" />
               ) : (
-                <Menu className="h-5 w-5" />
+                <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
               )}
             </button>
           </div>
@@ -124,7 +129,7 @@ export default function Home() {
             initial={{ opacity: 0, y: -12, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.25, ease: "easeOut" as const }}
-            className="md:hidden mt-3 p-5 rounded-3xl bg-void-black/95 backdrop-blur-xl border border-border shadow-key space-y-4 font-sans"
+            className="md:hidden mt-3 p-4 sm:p-5 rounded-3xl bg-void-black/95 backdrop-blur-xl border border-border shadow-key space-y-4 font-sans w-full"
           >
             <nav className="flex flex-col gap-3 text-[14px] font-medium text-ash">
               <Link
@@ -161,21 +166,21 @@ export default function Home() {
         )}
       </div>
 
-      <main className="flex-1 max-w-[1200px] mx-auto px-6 pt-28 pb-24 flex flex-col items-center justify-center text-center relative z-10 w-full">
+      <main className="flex-1 max-w-[1200px] mx-auto px-4 sm:px-6 pt-20 sm:pt-28 pb-16 sm:pb-24 flex flex-col items-center justify-center text-center relative z-10 w-full overflow-x-hidden">
         <motion.div
           initial={{ scale: 0.94, opacity: 0, y: 24 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" as const }}
-          className="w-full max-w-4xl mx-auto bg-void-black/90 backdrop-blur-xl border border-border/90 shadow-[0_0_120px_rgba(4,5,6,0.98)] px-8 py-12 sm:px-16 sm:py-16 rounded-[36px] relative mb-12 text-center"
+          className="w-full max-w-4xl mx-auto bg-void-black/90 backdrop-blur-xl border border-border/90 shadow-[0_0_120px_rgba(4,5,6,0.98)] px-5 py-8 sm:px-12 sm:py-16 md:px-16 rounded-[28px] sm:rounded-[36px] relative mb-10 sm:mb-12 text-center overflow-hidden"
         >
-          <h1 className="text-[44px] sm:text-[62px] font-medium tracking-[0.2px] leading-[1.12] text-pure-white mb-6 font-sans drop-shadow-[0_2px_15px_rgba(0,0,0,1)]">
+          <h1 className="text-[30px] sm:text-[48px] md:text-[60px] font-medium tracking-[0.1px] sm:tracking-[0.2px] leading-[1.18] sm:leading-[1.12] text-pure-white mb-5 sm:mb-6 font-sans drop-shadow-[0_2px_15px_rgba(0,0,0,1)] break-words">
             Your shortcut to <br className="hidden sm:inline" />
-            <span className="inline-block mt-2 bg-[#140608] border border-coral-pulse/60 shadow-[0_0_45px_rgba(255,42,42,0.4)] text-[#ff3838] font-semibold px-6 py-2 rounded-2xl tracking-tight">
+            <span className="inline-block mt-2 sm:mt-3 bg-[#140608] border border-coral-pulse/60 shadow-[0_0_45px_rgba(255,42,42,0.4)] text-[#ff3838] font-semibold px-3.5 py-1.5 sm:px-6 sm:py-2 rounded-xl sm:rounded-2xl tracking-tight text-[22px] sm:text-[40px] md:text-[50px] max-w-full leading-tight">
               onchain proof of contribution.
             </span>
           </h1>
 
-          <p className="max-w-xl mx-auto text-[17px] text-pure-white/80 mb-2 leading-[1.65] font-normal drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
+          <p className="max-w-xl mx-auto text-[15px] sm:text-[17px] text-pure-white/80 mb-2 leading-[1.65] font-normal drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] px-2">
             Anchor git milestones, UI captures, and collaborative hackathon
             progress into immutable sub-second checkpoints on Monad Testnet
             without friction.
@@ -186,15 +191,15 @@ export default function Home() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" as const }}
-          className="flex flex-col sm:flex-row items-center gap-3.5 mb-28"
+          className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-20 sm:mb-28 w-full max-w-md sm:max-w-none mx-auto px-2"
         >
           <Link href="/projects" className="w-full sm:w-auto">
-            <Button className="bg-mist hover:bg-pure-white text-void-black text-[14px] font-medium px-6 h-11 rounded-lg shadow-sm gap-2 cursor-pointer transition-all w-full sm:w-auto">
+            <Button className="bg-mist hover:bg-pure-white text-void-black text-[14px] font-medium px-6 h-11 rounded-lg shadow-sm gap-2 cursor-pointer transition-all w-full sm:w-auto flex items-center justify-center">
               <span>Launch Command Center</span>
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
-          <div className="w-full sm:w-auto cursor-pointer">
+          <div className="w-full sm:w-auto cursor-pointer flex justify-center">
             <WalletConnect />
           </div>
         </motion.div>
@@ -204,20 +209,20 @@ export default function Home() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-40px" }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-[1100px] w-full text-left mb-28"
+          className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 max-w-[1100px] w-full text-left mb-20 sm:mb-28"
         >
           <motion.div
             variants={itemVariants}
             whileHover={{ y: -5, transition: { duration: 0.2 } }}
-            className="p-6 rounded-[16px] bg-ink/80 backdrop-blur-md border border-border shadow-key transition-all hover:border-smoke group cursor-pointer"
+            className="p-5 sm:p-6 rounded-[16px] bg-ink/80 backdrop-blur-md border border-border shadow-key transition-all hover:border-smoke group cursor-pointer"
           >
-            <div className="h-12 w-12 rounded-full bg-obsidian border border-border flex items-center justify-center text-mist mb-5 group-hover:border-coral-pulse transition-colors">
+            <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-full bg-obsidian border border-border flex items-center justify-center text-mist mb-4 sm:mb-5 group-hover:border-coral-pulse transition-colors">
               <Terminal className="h-5 w-5 text-coral-pulse" />
             </div>
-            <h3 className="text-[20px] font-medium text-pure-white mb-2 leading-[1.2]">
+            <h3 className="text-[18px] sm:text-[20px] font-medium text-pure-white mb-2 leading-[1.2]">
               Sub-Second Milestones
             </h3>
-            <p className="text-[16px] text-ash leading-[1.6] font-normal">
+            <p className="text-[15px] sm:text-[16px] text-ash leading-[1.6] font-normal">
               Eliminate block delays. Monad&apos;s high-throughput architecture
               logs real-time developer activity instantly.
             </p>
@@ -226,15 +231,15 @@ export default function Home() {
           <motion.div
             variants={itemVariants}
             whileHover={{ y: -5, transition: { duration: 0.2 } }}
-            className="p-6 rounded-[16px] bg-ink/80 backdrop-blur-md border border-border shadow-key transition-all hover:border-smoke group cursor-pointer"
+            className="p-5 sm:p-6 rounded-[16px] bg-ink/80 backdrop-blur-md border border-border shadow-key transition-all hover:border-smoke group cursor-pointer"
           >
-            <div className="h-12 w-12 rounded-full bg-obsidian border border-border flex items-center justify-center text-mist mb-5 group-hover:border-electric-sky transition-colors">
+            <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-full bg-obsidian border border-border flex items-center justify-center text-mist mb-4 sm:mb-5 group-hover:border-electric-sky transition-colors">
               <ShieldCheck className="h-5 w-5 text-electric-sky" />
             </div>
-            <h3 className="text-[20px] font-medium text-pure-white mb-2 leading-[1.2]">
+            <h3 className="text-[18px] sm:text-[20px] font-medium text-pure-white mb-2 leading-[1.2]">
               P-256 Precompile Security
             </h3>
-            <p className="text-[16px] text-ash leading-[1.6] font-normal">
+            <p className="text-[15px] sm:text-[16px] text-ash leading-[1.6] font-normal">
               Native secp256r1 hardware passkey verification at `0x0100`
               guarantees cryptographically undeniable authorship.
             </p>
@@ -243,15 +248,15 @@ export default function Home() {
           <motion.div
             variants={itemVariants}
             whileHover={{ y: -5, transition: { duration: 0.2 } }}
-            className="p-6 rounded-[16px] bg-ink/80 backdrop-blur-md border border-border shadow-key transition-all hover:border-smoke group cursor-pointer"
+            className="p-5 sm:p-6 rounded-[16px] bg-ink/80 backdrop-blur-md border border-border shadow-key transition-all hover:border-smoke group cursor-pointer"
           >
-            <div className="h-12 w-12 rounded-full bg-obsidian border border-border flex items-center justify-center text-mist mb-5 group-hover:border-emerald-verify transition-colors">
+            <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-full bg-obsidian border border-border flex items-center justify-center text-mist mb-4 sm:mb-5 group-hover:border-emerald-verify transition-colors">
               <Layers className="h-5 w-5 text-emerald-verify" />
             </div>
-            <h3 className="text-[20px] font-medium text-pure-white mb-2 leading-[1.2]">
+            <h3 className="text-[18px] sm:text-[20px] font-medium text-pure-white mb-2 leading-[1.2]">
               Collaborative Ledger
             </h3>
-            <p className="text-[16px] text-ash leading-[1.6] font-normal">
+            <p className="text-[15px] sm:text-[16px] text-ash leading-[1.6] font-normal">
               Co-sign project milestones with teammates while retaining
               individual wallet attribution on every transaction.
             </p>
@@ -259,25 +264,25 @@ export default function Home() {
         </motion.div>
       </main>
 
-      <div className="w-full relative overflow-hidden bg-void-black pt-20 pb-8 border-t border-border select-none z-10">
+      <div className="w-full relative overflow-hidden bg-void-black pt-14 sm:pt-20 pb-8 border-t border-border select-none z-10">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease: "easeOut" as const }}
-          className="w-full flex items-center justify-center mb-10 overflow-hidden px-4"
+          className="w-full flex items-center justify-center mb-6 sm:mb-10 overflow-hidden px-2"
         >
-          <div className="text-[100px] sm:text-[170px] md:text-[240px] font-mono font-extrabold tracking-tighter text-pure-white/6 leading-none hover:text-coral-pulse/15 transition-all duration-700 cursor-default text-center">
+          <div className="text-[64px] sm:text-[140px] md:text-[200px] lg:text-[240px] font-mono font-extrabold tracking-tighter text-pure-white/6 leading-none hover:text-coral-pulse/15 transition-all duration-700 cursor-default text-center w-full max-w-full overflow-hidden">
             TRACE
           </div>
         </motion.div>
 
-        <div className="max-w-[1200px] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[12px] font-mono text-ash pt-6 border-t border-border">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] sm:text-[12px] font-mono text-ash pt-6 border-t border-border text-center sm:text-left">
           <span>
             © 2026 TRACE Enclave Ledger. Built for Monad Testnet (`Chain ID
             10143`).
           </span>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4 flex-wrap justify-center">
             <span>TRACE v1.0.0</span>
             <span>|</span>
             <span>Powered by P-256 Precompiles</span>
