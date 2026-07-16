@@ -100,13 +100,8 @@ export function AICheckpointAssistant({
 
       <CardHeader className="pb-4 border-b border-border flex flex-row items-center justify-between">
         <CardTitle className="text-[16px] font-medium text-pure-white flex items-center gap-2 font-sans">
-          <BrainCircuit className="h-5 w-5 text-coral-pulse animate-pulse" />
           <span>TRACE AI Checkpoint Proof Assistant</span>
         </CardTitle>
-        <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold uppercase bg-graphite text-coral-pulse border border-border flex items-center gap-1">
-          <Sparkles className="h-3 w-3" />
-          <span>Monad Enclave AI</span>
-        </span>
       </CardHeader>
 
       <CardContent className="pt-5 space-y-5 font-mono text-[13px]">

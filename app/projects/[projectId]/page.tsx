@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, useCallback, use } from "react";
 import { useAccount } from "wagmi";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { toast } from "sonner";
 import { WalletConnect } from "@/components/wallet-connect";
 import { CollaboratorManager } from "@/components/projects/collaborator-manager";
 import { CloneProjectModal } from "@/components/projects/clone-project-modal";
@@ -21,7 +19,6 @@ import { LiveEvolutionView } from "@/components/projects/live-evolution-view";
 import { ExportPanel } from "@/components/projects/export-panel";
 import { ProjectComparison } from "@/components/projects/project-comparison";
 import { ErrorBoundary } from "@/components/ui/error-handling";
-import { ProjectSkeleton } from "@/components/ui/loading-states";
 import { CheckpointCreationForm } from "@/components/checkpoints/checkpoint-creation-form";
 import { TxConfirmation } from "@/components/checkpoints/tx-confirmation";
 import { useMonadCheckpointTx } from "@/hooks/use-monad-checkpoint-tx";
@@ -36,6 +33,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -109,6 +113,7 @@ export default function ProjectDetailPage({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCloneModal, setShowCloneModal] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const [showPasskeyPanel, setShowPasskeyPanel] = useState(false);
   const [showCheckpointForm, setShowCheckpointForm] = useState(false);
   const { txResult, submitCheckpoint, resetTx } = useMonadCheckpointTx();
@@ -262,15 +267,18 @@ export default function ProjectDetailPage({
           </div>
         )}
 
-        {showCloneModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-void-black/80 backdrop-blur-md p-4 animate-fade-in">
+        <Dialog open={showCloneModal} onOpenChange={setShowCloneModal}>
+          <DialogContent
+            showCloseButton={false}
+            className="p-0 border-0 bg-transparent shadow-none max-w-lg w-full sm:max-w-lg"
+          >
             <CloneProjectModal
               projectId={project.projectId}
               originalName={project.name}
               onClose={() => setShowCloneModal(false)}
             />
-          </div>
-        )}
+          </DialogContent>
+        </Dialog>
 
         <AlertDialog
           open={showDeleteConfirm}
@@ -370,7 +378,7 @@ export default function ProjectDetailPage({
           <div className="flex items-center gap-2.5 shrink-0 flex-wrap w-full sm:w-auto justify-end">
             <ProjectFollowButton projectId={project.projectId} />
 
-            <Popover>
+            <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
               <PopoverTrigger
                 className="cursor-pointer bg-graphite hover:bg-slate text-pure-white border border-border h-9 w-9 rounded-xl shadow-sm flex items-center justify-center transition-all hover:border-border/80 hover:shadow-md shrink-0 outline-none"
                 title="More Enclave Actions"
@@ -389,7 +397,10 @@ export default function ProjectDetailPage({
                 </div>
 
                 <button
-                  onClick={() => setShowCloneModal(true)}
+                  onClick={() => {
+                    setPopoverOpen(false);
+                    setShowCloneModal(true);
+                  }}
                   className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg hover:bg-graphite text-left transition-all group cursor-pointer"
                 >
                   <div className="h-8 w-8 rounded-lg bg-graphite/80 group-hover:bg-graphite flex items-center justify-center border border-border/50 group-hover:border-coral-pulse/50 transition-colors shrink-0">
@@ -415,7 +426,10 @@ export default function ProjectDetailPage({
                     </div>
 
                     <button
-                      onClick={() => setIsEditing(!isEditing)}
+                      onClick={() => {
+                        setPopoverOpen(false);
+                        setIsEditing(true);
+                      }}
                       className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg hover:bg-graphite text-left transition-all group cursor-pointer"
                     >
                       <div className="h-8 w-8 rounded-lg bg-graphite/80 group-hover:bg-graphite flex items-center justify-center border border-border/50 group-hover:border-electric-sky/50 transition-colors shrink-0">
@@ -423,7 +437,7 @@ export default function ProjectDetailPage({
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[13px] font-medium text-pure-white group-hover:text-electric-sky transition-colors">
-                          {isEditing ? "Cancel Edit" : "Edit Metadata"}
+                          Edit Metadata
                         </p>
                         <p className="text-[11px] text-ash truncate">
                           Update title & description
@@ -432,7 +446,10 @@ export default function ProjectDetailPage({
                     </button>
 
                     <button
-                      onClick={() => setShowDeleteConfirm(true)}
+                      onClick={() => {
+                        setPopoverOpen(false);
+                        setShowDeleteConfirm(true);
+                      }}
                       className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg hover:bg-coral-pulse/10 text-left transition-all group cursor-pointer"
                     >
                       <div className="h-8 w-8 rounded-lg bg-graphite/80 group-hover:bg-coral-pulse/20 flex items-center justify-center border border-border/50 group-hover:border-coral-pulse/50 transition-colors shrink-0">
@@ -454,114 +471,127 @@ export default function ProjectDetailPage({
           </div>
         </div>
 
-        {isEditing && (
-          <Card className="bg-[#07080a] border border-[#ff6363] shadow-key animate-fade-in">
-            <CardHeader className="border-b border-[#363739] pb-3">
-              <CardTitle className="text-[18px] text-[#ffffff] font-medium">
-                Update Project Metadata & Visibility
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-5">
-              <form onSubmit={handleUpdateProject} className="space-y-4">
-                <div className="space-y-2">
+        <Dialog open={isEditing} onOpenChange={setIsEditing}>
+          <DialogContent className="bg-[#07080a] border border-[#363739] shadow-key max-w-md w-full p-6 rounded-2xl text-pure-white">
+            <DialogHeader className="space-y-2 border-b border-[#363739] pb-4 text-left">
+              <DialogTitle className="text-[18px] text-[#ffffff] font-medium font-sans flex items-center gap-2">
+                <Edit2 className="h-5 w-5 text-coral-pulse" />
+                <span>Update Project Metadata</span>
+              </DialogTitle>
+              <DialogDescription className="text-[13px] text-ash">
+                Modify your project&lsquo;s identity and public visibility
+                (`isPublic`) on the Monad verification matrix.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleUpdateProject} className="space-y-4 pt-4">
+              <div className="space-y-2">
+                <Label
+                  htmlFor="edit-name"
+                  className="text-[13px] text-[#ffffff]"
+                >
+                  Project Name
+                </Label>
+                <Input
+                  id="edit-name"
+                  value={editForm.name}
+                  onChange={(e) =>
+                    setEditForm((prev) => ({ ...prev, name: e.target.value }))
+                  }
+                  required
+                  disabled={isSaving}
+                  className="bg-obsidian border-border text-pure-white text-[14px]"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="edit-desc"
+                  className="text-[13px] text-pure-white"
+                >
+                  Description
+                </Label>
+                <Textarea
+                  id="edit-desc"
+                  rows={3}
+                  value={editForm.description}
+                  onChange={(e) =>
+                    setEditForm((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
+                  required
+                  disabled={isSaving}
+                  className="bg-obsidian border-border text-pure-white text-[14px]"
+                />
+              </div>
+              <div className="flex items-center justify-between p-3.5 rounded-lg border border-border bg-obsidian/60">
+                <div className="space-y-0.5">
                   <Label
-                    htmlFor="edit-name"
-                    className="text-[13px] text-[#ffffff]"
+                    htmlFor="edit-public"
+                    className="text-[13px] font-medium text-pure-white cursor-pointer"
                   >
-                    Project Name
+                    Public Visibility (`isPublic`)
                   </Label>
-                  <Input
-                    id="edit-name"
-                    value={editForm.name}
-                    onChange={(e) =>
-                      setEditForm((prev) => ({ ...prev, name: e.target.value }))
-                    }
-                    required
-                    disabled={isSaving}
-                    className="bg-obsidian border-border text-pure-white text-[14px]"
-                  />
+                  <p className="text-[12px] text-ash">
+                    When toggled off, only you and added teammates can access or
+                    submit checkpoints.
+                  </p>
                 </div>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="edit-desc"
-                    className="text-[13px] text-pure-white"
-                  >
-                    Description
-                  </Label>
-                  <Textarea
-                    id="edit-desc"
-                    rows={3}
-                    value={editForm.description}
-                    onChange={(e) =>
-                      setEditForm((prev) => ({
-                        ...prev,
-                        description: e.target.value,
-                      }))
-                    }
-                    required
-                    disabled={isSaving}
-                    className="bg-obsidian border-border text-pure-white text-[14px]"
-                  />
-                </div>
-                <div className="flex items-center justify-between p-3.5 rounded-lg border border-border bg-obsidian/60">
-                  <div className="space-y-0.5">
-                    <Label
-                      htmlFor="edit-public"
-                      className="text-[13px] font-medium text-pure-white cursor-pointer"
-                    >
-                      Public Visibility (`isPublic`)
-                    </Label>
-                    <p className="text-[12px] text-ash">
-                      When toggled off, only you and added teammates can access
-                      or submit checkpoints.
-                    </p>
-                  </div>
-                  <Switch
-                    id="edit-public"
-                    checked={editForm.isPublic}
-                    onCheckedChange={(checked) =>
-                      setEditForm((prev) => ({ ...prev, isPublic: checked }))
-                    }
-                    disabled={isSaving}
-                    className="cursor-pointer"
-                  />
-                </div>
-                <div className="flex justify-end gap-3 pt-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsEditing(false)}
-                    disabled={isSaving}
-                    className="cursor-pointer bg-obsidian hover:bg-graphite text-mist border-border text-[13px] h-9 px-4"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={isSaving}
-                    className="cursor-pointer bg-mist hover:bg-pure-white text-obsidian font-medium text-[13px] h-9 px-5 rounded-lg shadow-sm"
-                  >
-                    {isSaving && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    <span>Save Changes</span>
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        )}
+                <Switch
+                  id="edit-public"
+                  checked={editForm.isPublic}
+                  onCheckedChange={(checked) =>
+                    setEditForm((prev) => ({ ...prev, isPublic: checked }))
+                  }
+                  disabled={isSaving}
+                  className="cursor-pointer"
+                />
+              </div>
+              <div className="flex justify-end gap-3 pt-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsEditing(false)}
+                  disabled={isSaving}
+                  className="cursor-pointer bg-obsidian hover:bg-graphite text-mist border-border text-[13px] h-9 px-4"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSaving}
+                  className="cursor-pointer bg-mist hover:bg-pure-white text-obsidian font-medium text-[13px] h-9 px-5 rounded-lg shadow-sm"
+                >
+                  {isSaving && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  <span>Save Changes</span>
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
 
         {/* Floating Side Dock Navigation System */}
         <nav className="fixed right-5 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2.5 p-3 rounded-2xl bg-ink/95 border border-border/80 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:border-coral-pulse/40 hover:shadow-[0_0_30px_rgba(255,42,42,0.08)]">
-          {([
-            { id: "overview", label: "Overview Dashboard", icon: LayoutDashboard },
-            { id: "evolution", label: "Evolution Replay", icon: Layers },
-            { id: "anchor", label: "Anchor Checkpoint", icon: Terminal },
-            { id: "timeline", label: "Timeline Ledger", icon: Clock },
-            { id: "team", label: "Teammates Access", icon: Users },
-            { id: "comparison", label: "Enclave Comparison", icon: GitCompare },
-          ] as const).map((tab) => {
+          {(
+            [
+              {
+                id: "overview",
+                label: "Overview Dashboard",
+                icon: LayoutDashboard,
+              },
+              { id: "evolution", label: "Evolution Replay", icon: Layers },
+              { id: "anchor", label: "Anchor Checkpoint", icon: Terminal },
+              { id: "timeline", label: "Timeline Ledger", icon: Clock },
+              { id: "team", label: "Teammates Access", icon: Users },
+              {
+                id: "comparison",
+                label: "Enclave Comparison",
+                icon: GitCompare,
+              },
+            ] as const
+          ).map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
@@ -599,7 +629,9 @@ export default function ProjectDetailPage({
                     <div className="text-[30px] font-semibold tracking-tight text-pure-white font-sans">
                       {project.checkpoints.length}
                     </div>
-                    <div className="text-[11px] text-ash font-mono">on-chain anchors</div>
+                    <div className="text-[11px] text-ash font-mono">
+                      on-chain anchors
+                    </div>
                   </div>
                   <div className="h-12 w-12 rounded-2xl bg-obsidian border border-border/50 group-hover:border-coral-pulse/30 transition-all flex items-center justify-center">
                     <Clock className="h-6 w-6 text-coral-pulse" />
@@ -614,7 +646,9 @@ export default function ProjectDetailPage({
                     <div className="text-[30px] font-semibold tracking-tight text-pure-white font-sans">
                       {project.collaborators.length}
                     </div>
-                    <div className="text-[11px] text-ash font-mono">authorized co-signers</div>
+                    <div className="text-[11px] text-ash font-mono">
+                      authorized co-signers
+                    </div>
                   </div>
                   <div className="h-12 w-12 rounded-2xl bg-obsidian border border-border/50 group-hover:border-electric-sky/30 transition-all flex items-center justify-center">
                     <Users className="h-6 w-6 text-electric-sky" />
@@ -629,7 +663,9 @@ export default function ProjectDetailPage({
                     <div className="text-[30px] font-semibold tracking-tight text-emerald-verify font-sans">
                       Sub-Sec
                     </div>
-                    <div className="text-[11px] text-ash font-mono">Monad ~0.8s latency</div>
+                    <div className="text-[11px] text-ash font-mono">
+                      Monad ~0.8s latency
+                    </div>
                   </div>
                   <div className="h-12 w-12 rounded-2xl bg-obsidian border border-border/50 group-hover:border-emerald-verify/30 transition-all flex items-center justify-center">
                     <CheckCircle2 className="h-6 w-6 text-emerald-verify" />
@@ -751,13 +787,16 @@ export default function ProjectDetailPage({
                       const cp = checkpoint as Record<string, string>;
                       if (cp.checkpointHash) {
                         const cols = cp.collaborators
-                          ? (typeof cp.collaborators === "string"
-                              ? JSON.parse(cp.collaborators)
-                              : cp.collaborators)
+                          ? typeof cp.collaborators === "string"
+                            ? JSON.parse(cp.collaborators)
+                            : cp.collaborators
                           : [];
                         const typeMap: Record<string, number> = {
-                          MANUAL: 0, GIT_COMMIT: 1, DEPLOYMENT: 2,
-                          SCREENSHOT: 3, COLLABORATION: 4,
+                          MANUAL: 0,
+                          GIT_COMMIT: 1,
+                          DEPLOYMENT: 2,
+                          SCREENSHOT: 3,
+                          COLLABORATION: 4,
                         };
                         await submitCheckpoint(
                           project.projectId,
@@ -797,13 +836,16 @@ export default function ProjectDetailPage({
                       const cp = checkpoint as Record<string, string>;
                       if (cp?.checkpointHash && project) {
                         const typeMap: Record<string, number> = {
-                          MANUAL: 0, GIT_COMMIT: 1, DEPLOYMENT: 2,
-                          SCREENSHOT: 3, COLLABORATION: 4,
+                          MANUAL: 0,
+                          GIT_COMMIT: 1,
+                          DEPLOYMENT: 2,
+                          SCREENSHOT: 3,
+                          COLLABORATION: 4,
                         };
                         const cols = cp.collaborators
-                          ? (typeof cp.collaborators === "string"
-                              ? JSON.parse(cp.collaborators)
-                              : cp.collaborators)
+                          ? typeof cp.collaborators === "string"
+                            ? JSON.parse(cp.collaborators)
+                            : cp.collaborators
                           : [];
                         submitCheckpoint(
                           project.projectId,
