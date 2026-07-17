@@ -209,15 +209,14 @@ export function WalletConnect() {
 
   return (
     <div className="flex items-center gap-3">
-      {connectors.map((connector) => (
+      {connectors.length === 0 ? (
         <Button
-          key={connector.uid}
           onClick={() =>
-            connect({
-              connector,
-            })
+            window.open(
+              "https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn",
+              "_blank",
+            )
           }
-          disabled={isPending}
           className="
             group
             relative
@@ -238,28 +237,68 @@ export function WalletConnect() {
             hover:scale-[1.02]
           "
         >
-          <div
-            className="
-              absolute
-              inset-0
-              bg-gradient-to-r
-              from-transparent
-              via-[#ff6363]/20
-              to-transparent
-              translate-x-[-120%]
-              group-hover:translate-x-[120%]
-              transition-transform
-              duration-700
-            "
-          />
-
           <Wallet className="relative h-5 w-5 text-[#ff6363]" />
-
-          <span className="relative">
-            {isPending ? "Connecting..." : "Connect Wallet"}
-          </span>
+          <span className="relative">Install MetaMask</span>
         </Button>
-      ))}
+      ) : (
+        connectors.map((connector) => (
+          <Button
+            key={connector.uid}
+            onClick={() => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              if (typeof window !== "undefined" && !(window as any).ethereum) {
+                window.open(
+                  "https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn",
+                  "_blank",
+                );
+                return;
+              }
+              connect({
+                connector,
+              });
+            }}
+            disabled={isPending}
+            className="
+              group
+              relative
+              overflow-hidden
+              cursor-pointer
+              bg-white
+              hover:bg-white/90
+              text-[#111214]
+              font-semibold
+              text-[14px]
+              h-11
+              px-6
+              rounded-xl
+              shadow-lg
+              gap-3
+              transition-all
+              duration-300
+              hover:scale-[1.02]
+            "
+          >
+            <div
+              className="
+                absolute
+                inset-0
+                bg-gradient-to-r
+                from-transparent
+                via-[#ff6363]/20
+                to-transparent
+                translate-x-[-120%]
+                group-hover:translate-x-[120%]
+                transition-transform
+                duration-700
+              "
+            />
+            <Wallet className="relative h-5 w-5 text-[#ff6363]" />
+            <span className="relative">
+              {isPending ? "Connecting..." : "Connect Wallet"}
+            </span>
+          </Button>
+        ))
+      )}
     </div>
   );
 }
