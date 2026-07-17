@@ -8,7 +8,8 @@ contract DeployTraceCheckpoint is Script {
     TraceCheckpoint public traceCheckpoint;
 
     function run() public {
-        vm.startBroadcast();
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(deployerPrivateKey);
 
         traceCheckpoint = new TraceCheckpoint();
 
