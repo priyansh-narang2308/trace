@@ -5,7 +5,7 @@ import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { encodeFunctionData, keccak256, toBytes, parseGwei, zeroAddress } from "viem";
 import { monadTestnet } from "@/lib/wagmi";
 
-const CONTRACT_ADDRESS = "0xaD1B8719a89D008db117ce3371F57432934EC3e5" as `0x${string}`;
+const CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "0x1b1886b5800e7b51ca81adf6c6f72c1d84b01f6c") as `0x${string}`;
 
 const PROJECT_ABI = [
   {

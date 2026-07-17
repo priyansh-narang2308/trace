@@ -6,7 +6,8 @@
   "installCommand": "npm install",
   "env": {
     "NEXT_PUBLIC_CHAIN_ID": "10143",
-    "NEXT_PUBLIC_RPC_URL": "https://rpc.monad.xyz"
+    "NEXT_PUBLIC_RPC_URL": "https://testnet-rpc.monad.xyz",
+    "NEXT_PUBLIC_CONTRACT_ADDRESS": "0x1b1886b5800e7b51ca81adf6c6f72c1d84b01f6c"
   },
   "headers": [
     {

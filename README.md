@@ -1,198 +1,94 @@
-# TRACE - Monad Testnet Enclave & Cryptographic Checkpoint Ledger
+# TRACE — On-Chain Proof of Contribution
 
-## Executive Overview
+TRACE is a developer tool that lets hackathon teams and remote collaborators anchor their project milestones directly on the Monad blockchain. Every checkpoint — whether it's a code commit, a deployment, or a team review — gets hashed and stored immutably on-chain, creating a trustless record of who did what and when.
 
-TRACE is a high-performance, ultra-low-latency cryptographic checkpoint ledger designed for multi-signer autonomous project enclaves. By leveraging Monad Testnet's sub-second finality execution ring and native `secp256r1` (`0x0100`) precompile optimization, TRACE allows developers, auditors, and autonomous AI agents to anchor milestone states, smart contract deployments, and git commit digests directly on-chain with 99.4% gas efficiency.
+## The Problem
 
----
+In hackathons and open-source projects, contribution disputes are real. "Who actually wrote that feature?" "Was the deployment done before or after the deadline?" Centralized tools like GitHub can be edited, rebased, or force-pushed. There's no tamper-proof way to prove contribution timelines.
 
-## System Architecture
+## The Solution
 
-The TRACE platform is structured into five synchronized tiers designed for sub-second execution, zero-knowledge verification, and state persistence across decentralized co-signers.
+TRACE gives every team member a simple interface to:
+- **Create projects** with on-chain registration
+- **Anchor checkpoints** (milestones, commits, deployments) as Keccak256 hashes on Monad Testnet
+- **Add collaborators** with wallet-based attribution
+- **Verify contributions** — anyone can look up the on-chain record and confirm exactly when a checkpoint was submitted
 
-```
-+---------------------------------------------------------------------------------------------------+
-|                                      CLIENT & PRESENTATION TIER                                   |
-|   Next.js 16.2 App Router (Turbopack) · React 19 · Tailwind CSS v4 · Glassmorphic Design System  |
-|                                                                                                   |
-|   +-----------------------+   +------------------------+   +----------------------------------+   |
-|   | Enclave Cockpit       |   | Command-K Search       |   | E2E System Diagnostics Suite     |   |
-|   | (/projects/[id])      |   | (/api/search)          |   | (/testing)                       |   |
-|   +-----------------------+   +------------------------+   +----------------------------------+   |
-+-------------------------------------------------+-------------------------------------------------+
-                                                  |
-                                                  v
-+---------------------------------------------------------------------------------------------------+
-|                                       API & SYNCHRONIZATION TIER                                  |
-|   Next.js Serverless Route Handlers · Bi-directional WebSocket Channels · TanStack React Query    |
-|                                                                                                   |
-|   +-----------------------+   +------------------------+   +----------------------------------+   |
-|   | Checkpoint Engine     |   | WebAuthn Passkeys      |   | Real-Time WebSocket Broadcast    |   |
-|   | (/api/checkpoints)    |   | (/api/passkey/*)       |   | (/api/ws/checkpoints)            |   |
-|   +-----------------------+   +------------------------+   +----------------------------------+   |
-+-------------------------------------------------+-------------------------------------------------+
-                                                  |
-                                                  v
-+---------------------------------------------------------------------------------------------------+
-|                                      AI & COMPUTATION ENCLAVE                                     |
-|   TRACE Algorithmic Enclave Engine · 100% Local Execution · Zero External API Costs ($0.00)       |
-|                                                                                                   |
-|   +-------------------------------------------------------------------------------------------+   |
-|   | Algorithmic Proof Synthesizer (/api/ai/suggest)                                           |   |
-|   | Calculates confidence scores (98.6%), precompile gas savings (99.4%), and formats digests |   |
-|   +-------------------------------------------------------------------------------------------+   |
-+-------------------------------------------------+-------------------------------------------------+
-                                                  |
-                                                  v
-+---------------------------------------------------------------------------------------------------+
-|                                        MONAD EXECUTION RING                                       |
-|   Monad Testnet RPC (https://rpc.monad.xyz) · Chain ID 10143 · Sub-Second Consensus (<0.8s)       |
-|                                                                                                   |
-|   +-------------------------------------------------------------------------------------------+   |
-|   | TraceCheckpoint.sol Smart Contract (Foundry Deployment)                                   |   |
-|   | secp256r1 (0x0100) Gas Precompile Attestation · Immutable Keccak256 State Anchors         |   |
-|   +-------------------------------------------------------------------------------------------+   |
-+-------------------------------------------------+-------------------------------------------------+
-                                                  |
-                                                  v
-+---------------------------------------------------------------------------------------------------+
-|                                        PERSISTENCE & STORAGE                                      |
-|   Prisma ORM v7 · PostgreSQL / SQLite Engine · Vercel Blob Storage · Upstash Redis Cache          |
-|                                                                                                   |
-|   +-------------------------------------------------------------------------------------------+   |
-|   | Relational Ledger: Projects, Checkpoints, Collaborator Signatures, Soulbound Badges       |   |
-|   +-------------------------------------------------------------------------------------------+   |
-+---------------------------------------------------------------------------------------------------+
-```
+Monad's sub-second finality means anchoring a checkpoint feels instant — no waiting 12+ seconds like on Ethereum L1. This makes it practical to use TRACE as part of your actual development workflow, not just as an afterthought.
 
----
+## Tech Stack
 
-## Key Subsystems & Core Capabilities
+| Layer | Tech |
+|---|---|
+| Frontend | Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, Framer Motion |
+| Blockchain | Solidity (Foundry), Viem, Wagmi v3, Monad Testnet (Chain ID 10143) |
+| Backend | Next.js API Routes, Prisma ORM v7, PostgreSQL |
+| Storage | Vercel Blob (screenshots), Upstash Redis (caching) |
+| Auth | MetaMask wallet connect, WebAuthn passkeys |
 
-### Monad secp256r1 (0x0100) Enclave Verification
+## Smart Contract
 
-Every checkpoint submitted to TRACE is hashed using Keccak256 and verified through Monad's native `secp256r1` (`0x0100`) precompile. This architecture reduces signature validation gas overhead by 99.4% compared to legacy EVM verification routines.
+The `TraceCheckpoint.sol` contract handles:
+- Project creation and ownership
+- Checkpoint anchoring with Keccak256 hashes
+- Collaborator management with access control
+- On-chain event emission for indexing
 
-### Sub-Second Checkpoint Cockpit
+**Deployed on Monad Testnet:** `0x1b1886b5800e7b51ca81adf6c6f72c1d84b01f6c`
 
-Anchor `MILESTONE`, `DEPLOYMENT`, `GIT_COMMIT`, `REVIEW`, and `COLLABORATION` proofs with 1-click execution. Transactions achieve finality in under 0.8 seconds on Monad Testnet, providing instant feedback across the entire team.
+## Features
 
-### Biometric WebAuthn Passkey Authentication
+- **Checkpoint Dashboard** — Create, browse, and manage project checkpoints with real-time status
+- **On-Chain Transactions** — Every checkpoint triggers a real Monad Testnet transaction via MetaMask
+- **Collaborator Management** — Add team members by wallet address with on-chain verification
+- **AI Suggestions** — Get context-aware checkpoint descriptions based on your project activity
+- **Analytics** — Track checkpoint velocity, contribution patterns, and project health
+- **Live Feed** — See real-time checkpoint activity across all public projects
+- **Export** — Download your checkpoint history as JSON or formatted reports for audits
+- **Command-K Search** — Quick-search across projects, hashes, and addresses
 
-Zero-password, hardware-backed secure co-signing (`/api/passkey/register` and `/api/passkey/verify`) allowing contributors to authorize on-chain state transitions directly from biometric hardware, with automatic fallback to traditional EVM wallets.
-
-### TRACE Enclave AI Assistant (Local & Zero Cost)
-
-Algorithmic proof synthesis that analyzes commit logs, contract deployment parameters, and state diffs locally on the server (`/api/ai/suggest`). Operates with zero external API dependencies, zero third-party keys, and zero financial cost ($0.00).
-
-### Real-Time WebSocket Ledger Stream
-
-Instantaneous state replication across active co-signers via bi-directional WebSocket channels (`/api/ws/checkpoints`). When any collaborator anchors a proof or updates team permissions, all connected clients sync in real time without manual refreshes.
-
-### Raycast Command-K Instant Palette
-
-Rapid floating command center (`Command+K` / `Ctrl+K`) to search project enclaves, lookup Keccak256 transaction hashes (`0x...`), and navigate across multiple repositories instantly.
-
-### Enclave Analytics & Velocity Charts
-
-Comprehensive verification metrics dashboard (`/analytics`) featuring weekly checkpoint velocity bars, attestation type distribution breakdowns, and side-by-side head-to-head project comparison matrices.
-
-### Soulbound NFT Contribution Badges
-
-Gamified reputation matrix (`/achievements`) where verified team members unlock and claim `Legendary`, `Mythic`, `Epic`, and `Rare` contribution NFTs directly to their connected Monad wallet (`0x0100...`).
-
-### Portable Cryptographic Exports
-
-Instant 1-click downloads (`components/projects/export-panel.tsx`) generating full JSON ledger archives and formatted ASCII-art TXT attestation reports for security audits, compliance, and offline archival.
-
----
-
-## Technology Stack
-
-| Layer                     | Technologies & Frameworks                                                                                                    |
-| :------------------------ | :--------------------------------------------------------------------------------------------------------------------------- |
-| **Frontend Core**         | Next.js 16.2 (Turbopack), React 19, TypeScript 5, Tailwind CSS v4 (`@tailwindcss/postcss`)                                   |
-| **Design & UI**           | Custom Dark Obsidian Theme (`bg-ink`, `bg-obsidian`, `text-coral-pulse`, `text-emerald-verify`), Lucide Icons, Framer Motion |
-| **Blockchain / EVM**      | Viem, Wagmi v3, Monad Testnet RPC (`https://rpc.monad.xyz`, Chain ID `10143`), Foundry (`TraceCheckpoint.sol`)               |
-| **State & Notifications** | Sonner (`toast.success`, `toast.info`, `toast.error`), Zustand, TanStack React Query v5                                      |
-| **Database & Cache**      | Prisma ORM v7 (`@prisma/client`), PostgreSQL / SQLite Adapter, Vercel Blob SDK, Upstash Redis (`ioredis`)                    |
-
----
-
-## Complete 60-Task Verification Status
-
-All 60 granular implementation tasks across all 8 project subsystems have been built, integrated, and verified against strict quality requirements:
-
-- **Zero Code Comments**: All codebase files contain self-documenting code and clear semantic identifiers without explanatory comments.
-- **Clean Raycast UI**: Dark glassmorphic styling (`shadow-key`, `bg-obsidian/80`) with `cursor-pointer` on every interactive button, card, and trigger.
-- **Rich Toast Feedback**: Every action (transaction submission, passkey verification, cloning, copying, searching, AI suggestion staging) emits instant user feedback via `sonner`.
-
-### Built-In E2E System Diagnostics Suite
-
-Navigate to `/testing` (`http://localhost:3000/testing`) in your browser to run the TRACE E2E Enclave Verification Suite (`Task 57`). The interactive diagnostic runner validates foundation layers, database bindings, contract precompiles, and real-time streams live in the browser.
-
----
-
-## Quickstart & Local Development
-
-### 1. Clone & Install Dependencies
+## Local Development
 
 ```bash
-git clone https://github.com/your-username/trace-monad-enclave.git
-cd trace-monad-enclave
+# Clone and install
+git clone https://github.com/your-username/trace.git
+cd trace
 npm install
-```
 
-### 2. Configure Environment Variables (.env)
+# Set up environment
+cp .env.example .env
+# Fill in DATABASE_URL, NEXT_PUBLIC_CONTRACT_ADDRESS, etc.
 
-Create or verify the `.env` file in the root directory:
-
-```bash
-DATABASE_URL="file:./dev.db"
-NEXT_PUBLIC_CHAIN_ID="10143"
-NEXT_PUBLIC_RPC_URL="https://rpc.monad.xyz"
-```
-
-### 3. Initialize Database (Prisma ORM)
-
-```bash
+# Initialize database
 npx prisma generate
 npx prisma db push
-```
 
-### 4. Run Development Server (Turbopack)
-
-```bash
+# Run dev server
 npm run dev
 ```
 
-Open `http://localhost:3000` to access the TRACE Enclave Cockpit.
+Open [http://localhost:3000](http://localhost:3000) to use TRACE.
 
-### 5. Production Build Verification
-
-To compile and verify the optimized production bundle across all 15 application routes:
+## Testing
 
 ```bash
-npm run build
+# Frontend tests
+npm test
+
+# Smart contract tests (requires Foundry)
+cd contracts/trace-contract
+forge test
 ```
 
----
+## Deployment
 
-## Production Deployment (Vercel Unified Platform)
+TRACE is configured for Vercel deployment:
 
-TRACE is pre-configured for instant, unified 1-click deployment on the Vercel Platform (Frontend UI, API Route Handlers, and Database persistence):
+1. Push to GitHub
+2. Connect repo to Vercel
+3. Add environment variables: `DATABASE_URL`, `NEXT_PUBLIC_CONTRACT_ADDRESS`
+4. Deploy — Vercel auto-detects the Next.js config
 
-1. **Connect GitHub Repository**: Link your repository to your Vercel account.
-2. **Automated Build Setup**: Vercel automatically detects `vercel.json` and runs `npx prisma generate && next build` using Turbopack.
-3. **Configure Environment Variables**:
-   - `DATABASE_URL`: Set your Vercel Postgres, Neon, or cloud relational connection string (`postgresql://...`).
-   - `NEXT_PUBLIC_CHAIN_ID`: `10143` (Monad Testnet).
-   - `NEXT_PUBLIC_RPC_URL`: `https://rpc.monad.xyz`
-4. **Automated Schema Migrations**: Run `npx prisma db push` or add a post-build hook to sync your production schema.
-5. **Launch Enclave**: Click Deploy to instantly activate your sub-second Monad Testnet enclave globally.
+## License
 
----
-
-## License & Submission
-
-Built for the Monad Enclave Ecosystem Hackathon (`TRACE`). All rights reserved. Sub-second cryptographic verification powered by Monad Testnet (`Chain ID 10143`).
+MIT
