@@ -29,6 +29,13 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+} from "@/components/ui/drawer";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -761,62 +768,66 @@ export default function ProjectDetailPage({
                 {isOwner && (
                   <Button
                     onClick={() => {
-                      setShowCheckpointForm(!showCheckpointForm);
-                      if (!showCheckpointForm) resetTx();
+                      setShowCheckpointForm(true);
+                      resetTx();
                     }}
                     className="cursor-pointer bg-mist hover:bg-pure-white text-obsidian font-medium text-[13px] h-8 px-3.5 rounded-lg shadow-sm gap-2"
                   >
-                    {showCheckpointForm ? (
-                      <X className="h-3.5 w-3.5" />
-                    ) : (
-                      <Plus className="h-3.5 w-3.5" />
-                    )}
-                    <span>
-                      {showCheckpointForm ? "Close Form" : "New Checkpoint"}
-                    </span>
+                    <Plus className="h-3.5 w-3.5" />
+                    <span>New Checkpoint</span>
                   </Button>
                 )}
               </div>
 
-              {showCheckpointForm && (
-                <div className="space-y-4 animate-fade-in">
-                  <CheckpointCreationForm
-                    projectId={project.projectId}
-                    collaborators={project.collaborators}
-                    onSuccess={async (checkpoint) => {
-                      const cp = checkpoint as Record<string, string>;
-                      if (cp.checkpointHash) {
-                        const cols = cp.collaborators
-                          ? typeof cp.collaborators === "string"
-                            ? JSON.parse(cp.collaborators)
-                            : cp.collaborators
-                          : [];
-                        const typeMap: Record<string, number> = {
-                          MANUAL: 0,
-                          GIT_COMMIT: 1,
-                          DEPLOYMENT: 2,
-                          SCREENSHOT: 3,
-                          COLLABORATION: 4,
-                        };
-                        await submitCheckpoint(
-                          project.projectId,
-                          cp.description || "",
-                          cp.checkpointHash,
-                          project.name,
-                          project.description,
-                          project.isPublic,
-                          cols,
-                          typeMap[cp.checkpointType] ?? 0,
-                        );
-                      }
-                      fetchProjectDetail();
-                      setShowCheckpointForm(false);
-                    }}
-                    onCancel={() => setShowCheckpointForm(false)}
-                  />
-                  <TxConfirmation txResult={txResult} />
-                </div>
-              )}
+              <Drawer open={showCheckpointForm} onOpenChange={setShowCheckpointForm}>
+                <DrawerContent className="bg-ink border-border text-pure-white px-4 max-h-[95vh] overflow-y-auto">
+                  <div className="mx-auto w-full max-w-2xl pb-6">
+                    <DrawerHeader className="px-0 pt-4">
+                      <DrawerTitle className="text-xl font-medium tracking-tight">Anchor New Checkpoint</DrawerTitle>
+                      <DrawerDescription className="text-ash text-sm">
+                        Submit a new cryptographic milestone to the Monad Testnet blockchain.
+                      </DrawerDescription>
+                    </DrawerHeader>
+                    <div className="mt-2 space-y-4">
+                      <CheckpointCreationForm
+                        projectId={project.projectId}
+                        collaborators={project.collaborators}
+                        onSuccess={async (checkpoint) => {
+                          const cp = checkpoint as Record<string, string>;
+                          if (cp.checkpointHash) {
+                            const cols = cp.collaborators
+                              ? typeof cp.collaborators === "string"
+                                ? JSON.parse(cp.collaborators)
+                                : cp.collaborators
+                              : [];
+                            const typeMap: Record<string, number> = {
+                              MANUAL: 0,
+                              GIT_COMMIT: 1,
+                              DEPLOYMENT: 2,
+                              SCREENSHOT: 3,
+                              COLLABORATION: 4,
+                            };
+                            await submitCheckpoint(
+                              project.projectId,
+                              cp.description || "",
+                              cp.checkpointHash,
+                              project.name,
+                              project.description,
+                              project.isPublic,
+                              cols,
+                              typeMap[cp.checkpointType] ?? 0,
+                            );
+                          }
+                          fetchProjectDetail();
+                          setShowCheckpointForm(false);
+                        }}
+                        onCancel={() => setShowCheckpointForm(false)}
+                      />
+                      <TxConfirmation txResult={txResult} />
+                    </div>
+                  </div>
+                </DrawerContent>
+              </Drawer>
 
               {txResult.status !== "IDLE" && !showCheckpointForm && (
                 <TxConfirmation txResult={txResult} />

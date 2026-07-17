@@ -136,9 +136,7 @@ export function MicroCheckpointBar({
 
   const detectGitHead = async () => {
     setGitDetected(true);
-    setQuickDesc(
-      "feat(monad): latest commit anchored via TRACE enclave",
-    );
+    setQuickDesc("feat(monad): latest commit anchored via TRACE enclave");
     setSelectedType("GIT_COMMIT");
     toast.success("Git HEAD detected — ready to anchor");
   };
@@ -150,7 +148,6 @@ export function MicroCheckpointBar({
       <CardContent className="p-4 space-y-3">
         <div className="flex items-center justify-between text-[12px] font-mono">
           <div className="flex items-center gap-2 text-[#ffffff]">
-            <Zap className="h-4 w-4 text-[#ff6363] animate-pulse" />
             <span className="font-bold tracking-wide uppercase text-[#ff6363]">
               Micro-Checkpoint Mode
             </span>
@@ -215,7 +212,6 @@ export function MicroCheckpointBar({
 
         <div className="flex items-center gap-2 overflow-x-auto pb-1 text-[11px] font-mono no-scrollbar">
           <span className="flex items-center gap-1 text-[#9c9c9d] shrink-0 font-medium">
-            <Sparkles className="h-3 w-3 text-[#ff6363]" />
             <span>Suggestions:</span>
           </span>
           {PRESET_SUGGESTIONS.map((sug, idx) => (

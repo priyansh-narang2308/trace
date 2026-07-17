@@ -13,6 +13,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+} from "@/components/ui/drawer";
+import {
   Plus,
   FolderOpen,
   Users,
@@ -181,27 +188,32 @@ export default function ProjectsPage() {
             </p>
           </div>
           <Button
-            onClick={() => setShowCreateForm(!showCreateForm)}
+            onClick={() => setShowCreateForm(true)}
             className="cursor-pointer bg-[#e6e6e6] hover:bg-[#ffffff] text-[#111214] font-medium text-[13px] px-5 h-10 rounded-lg shadow-sm gap-2"
           >
-            {showCreateForm ? (
-              <X className="h-4 w-4" />
-            ) : (
-              <Plus className="h-4 w-4" />
-            )}
-
-            <span>{showCreateForm ? "Close Drawer" : "New Project"}</span>
+            <Plus className="h-4 w-4" />
+            <span>New Project</span>
           </Button>
         </div>
 
-        {showCreateForm && (
-          <div className="mb-12 animate-fade-in">
-            <CreateProjectForm
-              onSubmit={handleCreateProject}
-              onCancel={() => setShowCreateForm(false)}
-            />
-          </div>
-        )}
+        <Drawer open={showCreateForm} onOpenChange={setShowCreateForm}>
+          <DrawerContent className="bg-[#07080a] border-[#363739] text-[#ffffff] px-4">
+            <div className="mx-auto w-full max-w-lg pb-6">
+              <DrawerHeader className="px-0 pt-6">
+                <DrawerTitle className="text-xl font-medium tracking-tight">Initialize New Project</DrawerTitle>
+                <DrawerDescription className="text-[#9c9c9d] text-sm">
+                  Create a secure, on-chain workspace to track your progress and milestones on Monad Testnet.
+                </DrawerDescription>
+              </DrawerHeader>
+              <div className="mt-2">
+                <CreateProjectForm
+                  onSubmit={handleCreateProject}
+                  onCancel={() => setShowCreateForm(false)}
+                />
+              </div>
+            </div>
+          </DrawerContent>
+        </Drawer>
 
         <div className="flex items-center justify-between gap-4 mb-8">
           <div className="relative flex-1 max-w-md">

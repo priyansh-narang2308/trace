@@ -150,7 +150,6 @@ export function AICheckpointAssistant({
                 disabled={isLoading}
                 className="cursor-pointer px-3 py-1.5 rounded-lg bg-obsidian hover:bg-graphite border border-border text-ash hover:text-pure-white transition-all text-[12px] truncate max-w-sm flex items-center gap-1.5"
               >
-                <Zap className="h-3 w-3 text-electric-sky shrink-0" />
                 <span className="truncate">{qp}</span>
               </button>
             ))}
